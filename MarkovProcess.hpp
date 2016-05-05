@@ -46,6 +46,7 @@ public:
     MarkovState* getStartState();
     MarkovState* getNextState();    
     
+    void setWorkload(vector<double>);
     /**
      define actions
      */
@@ -54,7 +55,7 @@ public:
     
     void setAction(int indexOfEdgeCloud, int indexOfClient, int indexOfAction); /* each state should have an action */
     void setAction(MarkovState* state, MarkovAction* action); /* each state should have an action */
-    
+    void setAction(MarkovState* state, int action);
     MarkovAction* getRandomAction(); /* generate a random valid action for testing use */
     MarkovAction* getStartAction();
     MarkovAction* getNextAction();
@@ -69,7 +70,6 @@ public:
      *
      */
     double calculateTotalCost(MarkovState* state, MarkovAction * const action); /* not requsite to record all cost based on pair of <state, action>*/
-    double calculateTotalCost_circle(MarkovState* state, MarkovAction * const action);
     double calculateTotalCost_circle(MarkovState* const previousState, MarkovState* const transitState);
     
     void setCost(int indexOfEdgeCloud, int indexOfClient, double costOfTotal);

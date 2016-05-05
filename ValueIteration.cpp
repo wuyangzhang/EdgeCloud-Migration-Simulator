@@ -27,7 +27,7 @@ int ValueIteration::solve(){
     }else{
         threshold = epsilon * (1 - gamma) /gamma;
     }
-    printf("[ValueIteration] start to solve MDP with threshold %f\n",threshold);
+    //printf("[ValueIteration] start to solve MDP with threshold %f\n",threshold);
 
     bool finished = false;
     
@@ -69,9 +69,11 @@ int ValueIteration::solve(){
                     double probility = mdp->getTransitionProbability_circle(state,action,resultState);
                     nextUtil += probility * ( cost + gamma * mdp->getUtility(resultState));
                     
+                    /*
                     if(state->positionOfEdgeCloud == 0 && state->positionOfMobileUser == 2){
-                        //printf("result state[%d,%d] with %f\n",resultState->positionOfEdgeCloud,resultState->positionOfMobileUser, resultState->workload);
+                        printf("result state[%d,%d] with %f\n",resultState->positionOfEdgeCloud,resultState->positionOfMobileUser, resultState->workload);
                     }
+                     */
                     
                 }
                 
@@ -107,8 +109,8 @@ int ValueIteration::solve(){
             }
       
         } /* finish one round value iteration */
+        
         mdp->copyTempUtility();
-        //mdp->printUtility();
         numIterations ++;
         
         if(maxError < threshold){
@@ -116,6 +118,12 @@ int ValueIteration::solve(){
         }
     }
     
-    printf("Iteration after %d rounds is done!", numIterations);
+    if(this->pattern ==1){
+        for(vector<MarkovState*>::iterator it = mdp->stateOfCloudClient->begin(); it!=mdp->stateOfCloudClient->end();++it){
+
+            mdp->setAction( *it, (*it)->positionOfEdgeCloud);
+        }
+    }
+    //printf("Iteration after %d rounds is done!", numIterations);
     return numIterations;
 }

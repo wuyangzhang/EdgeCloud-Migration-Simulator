@@ -20,7 +20,7 @@ public:
     /**
      * The error threshold to stop the iteration
      */
-    double epsilon = 1e-2;
+    double epsilon = 1e-4;
     void setError(double epsilon);
     
     int numIterations;
@@ -30,8 +30,6 @@ public:
     enum{
         MIGRATE = 0,
         NO_MIGRATE
-        
-        
     };
     int pattern = 0;
 private:

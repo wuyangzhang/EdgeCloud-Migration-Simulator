@@ -95,11 +95,7 @@ MarkovProcess::~MarkovProcess(){
         delete *it;
     }
     
-    /*
-    for(vector<MarkovState*>::iterator it = this->resultingStates->begin(); it != this->resultingStates->end(); it++){
-        delete *it;
-    }
-    */
+  
     for(auto it = this->transitionMap->begin(); it!= this->transitionMap->end(); it++){
         delete it->first;
     }
@@ -120,13 +116,10 @@ MarkovProcess::~MarkovProcess(){
  ----------------------------------------------------------------------------------------
  */
 
-double MarkovProcess::calculateTotalCost_circle(MarkovState* state, MarkovAction * const action){
-    
-    return 0;
-    
-}
 
-double MarkovProcess::calculateTotalCost_circle(MarkovState* const previousState, MarkovState* const transitState){
+
+double
+MarkovProcess::calculateTotalCost_circle(MarkovState* const previousState, MarkovState* const transitState){
     
     int previousEdgeCloud = previousState->positionOfEdgeCloud;
     int previousClient = previousState->positionOfMobileUser;
@@ -201,7 +194,8 @@ double MarkovProcess::calculateTotalCost_circle(MarkovState* const previousState
 }
 
 
-double MarkovProcess::calculateTotalCost(MarkovState* state, MarkovAction * const action){
+double
+MarkovProcess::calculateTotalCost(MarkovState* state, MarkovAction * const action){
     
     state->costOfMigration = state->positionOfEdgeCloud - action->moveToIndexOfEdgeCloud;
     
@@ -222,41 +216,55 @@ double MarkovProcess::calculateTotalCost(MarkovState* state, MarkovAction * cons
     return state->costOfTotal;
 }
 
-void MarkovProcess::setCost(int indexOfEdgeCloud, int indexOfClient, double costOfTotal){
+
+void
+MarkovProcess::setCost(int indexOfEdgeCloud, int indexOfClient, double costOfTotal){
     this->stateOfCloudClient->at(indexOfEdgeCloud * this->totalNumberOfEdgeCloud + indexOfClient)->costOfTotal = costOfTotal;
 }
 
-void MarkovProcess::setCost(int indexOfEdgeCloud, int indexOfClient, double costOfMigration, double costOfTransmission){
+
+void
+MarkovProcess::setCost(int indexOfEdgeCloud, int indexOfClient, double costOfMigration, double costOfTransmission){
     this->stateOfCloudClient->at(indexOfEdgeCloud * this->totalNumberOfEdgeCloud + indexOfClient)->costOfMigration = costOfMigration;
     this->stateOfCloudClient->at(indexOfEdgeCloud * this->totalNumberOfEdgeCloud + indexOfClient)->costOfTransmission = costOfTransmission;
 }
 
-void MarkovProcess::setCost(MarkovState* state, MarkovAction * const action, double costOfTotal){
+
+void
+MarkovProcess::setCost(MarkovState* state, MarkovAction * const action, double costOfTotal){
     state->costOfTotal = costOfTotal;
 }
 
-void MarkovProcess::setCost(MarkovState* state, MarkovAction * const action, double costOfMigration, double costOfTransmission){
+
+void
+MarkovProcess::setCost(MarkovState* state, MarkovAction * const action, double costOfMigration, double costOfTransmission){
     state->costOfMigration = costOfMigration;
     state->costOfTransmission = costOfTransmission;
 }
 
-double MarkovProcess::getTotalCost(MarkovState* state, MarkovAction * const action){
+
+double
+MarkovProcess::getTotalCost(MarkovState* state, MarkovAction * const action){
     return state->costOfTotal;
 }
 
-double MarkovProcess::getTransmissionCost(MarkovState* state){
+
+double
+MarkovProcess::getTransmissionCost(MarkovState* state){
     return state->costOfTransmission;
 }
 
-double MarkovProcess::getMigrationCost(MarkovState* state, MarkovAction * const action){
+
+double
+MarkovProcess::getMigrationCost(MarkovState* state, MarkovAction * const action){
     return state->costOfMigration;
 }
 
 
-
-void MarkovProcess::printOptimizedActions(){
+void
+MarkovProcess::printOptimizedActions(){
     for(auto i = 0; i < stateOfCloudClient->size(); i++){
-        printf("[MarkovProcess] optimized migration site for state (%d, %d) is %d with utility %f\n", stateOfCloudClient->at(i)->positionOfEdgeCloud, stateOfCloudClient->at(i)->positionOfMobileUser, stateOfCloudClient->at(i)->action->moveToIndexOfEdgeCloud, stateOfCloudClient->at(i)->utility);
+        printf("[MarkovProcess] optimized migration site for state (%d, %d) is %d, load %f, utility %f\n", stateOfCloudClient->at(i)->positionOfEdgeCloud, stateOfCloudClient->at(i)->positionOfMobileUser, stateOfCloudClient->at(i)->action->moveToIndexOfEdgeCloud, stateOfCloudClient->at(i)->workload,stateOfCloudClient->at(i)->utility);
     }
 }
 
@@ -269,17 +277,21 @@ void MarkovProcess::printOptimizedActions(){
 	void setTerminateState(int indexOfEdgeCloud, int indexOfClient);
  
  */
-MarkovState* MarkovProcess::getState(int indexOfEdgeCloud, int indexOfClient){
+MarkovState*
+MarkovProcess::getState(int indexOfEdgeCloud, int indexOfClient){
     this->currentStateIndex = 0;
     return this->stateOfCloudClient->at(indexOfEdgeCloud * this->totalNumberOfEdgeCloud + indexOfClient);
 }
 
-MarkovState* MarkovProcess::getStartState(){
+MarkovState*
+MarkovProcess::getStartState(){
     this->currentStateIndex = 0;
     return this->stateOfCloudClient->at(0);
 }
 
-MarkovState* MarkovProcess::getNextState(){
+
+MarkovState*
+MarkovProcess::getNextState(){
     currentStateIndex++;
     /* if reach to the last state */
     if(currentStateIndex == this->stateOfCloudClient->size())
@@ -288,7 +300,22 @@ MarkovState* MarkovProcess::getNextState(){
         return this->stateOfCloudClient->at(currentStateIndex);
 }
 
-void MarkovProcess::setUtility(MarkovState* state, double utility){
+
+void
+MarkovProcess::setWorkload(vector<double> load){
+    if(load.size() != totalNumberOfEdgeCloud)
+        return;
+    
+    for(int i = 0; i < totalNumberOfEdgeCloud; i++){
+        for(int j = 0; j < totalNumberOfClientsPosition; j++){
+            stateOfCloudClient->at(i*totalNumberOfClientsPosition + j)->workload = load.at(i);
+        }
+    }
+}
+
+
+void
+MarkovProcess::setUtility(MarkovState* state, double utility){
     /* find this state in vector this->stateOfCloudClient and change utility*/
     for(vector<MarkovState*>::iterator it = this->stateOfCloudClient->begin(); it != this->stateOfCloudClient->end(); it++){
         if ( (*it)->positionOfEdgeCloud == state->positionOfEdgeCloud && (*it)->positionOfMobileUser == state->positionOfMobileUser){
@@ -297,7 +324,8 @@ void MarkovProcess::setUtility(MarkovState* state, double utility){
     }
 
 }
-void MarkovProcess::setTempUtility(MarkovState* state, double tempUtility){
+void
+MarkovProcess::setTempUtility(MarkovState* state, double tempUtility){
     /* find this state in vector this->stateOfCloudClient and change utility*/
     for(vector<MarkovState*>::iterator it = this->stateOfCloudClient->begin(); it != this->stateOfCloudClient->end(); it++){
         if ( (*it)->positionOfEdgeCloud == state->positionOfEdgeCloud && (*it)->positionOfMobileUser == state->positionOfMobileUser){
@@ -306,7 +334,8 @@ void MarkovProcess::setTempUtility(MarkovState* state, double tempUtility){
     }
 }
 
-double MarkovProcess::getUtility(MarkovState * const state){
+double
+MarkovProcess::getUtility(MarkovState * const state){
     /* find this state in vector this->stateOfCloudClient and return utility*/
     for(vector<MarkovState*>::iterator it = this->stateOfCloudClient->begin(); it != this->stateOfCloudClient->end(); it++){
         if ( (*it)->positionOfEdgeCloud == state->positionOfEdgeCloud && (*it)->positionOfMobileUser == state->positionOfMobileUser){
@@ -316,13 +345,15 @@ double MarkovProcess::getUtility(MarkovState * const state){
     return 0;
 }
 
-void MarkovProcess::copyTempUtility(){
+void
+MarkovProcess::copyTempUtility(){
     for(vector<MarkovState*>::iterator it = this->stateOfCloudClient->begin(); it != this->stateOfCloudClient->end(); it++){
         (*it)->utility = (*it)->tempUtility;
     }
 }
 
-void MarkovProcess::printUtility(){
+void
+MarkovProcess::printUtility(){
     for(vector<MarkovState*>::iterator it = this->stateOfCloudClient->begin(); it != this->stateOfCloudClient->end(); it++){
         printf("Utility of state(%d,%d): %f\n", (*it)->positionOfEdgeCloud, (*it)->positionOfMobileUser, (*it)->utility);
     }
@@ -354,17 +385,27 @@ MarkovAction* MarkovProcess::getRandomAction(){
     return this->actions->at(randomIndexAction);
 }
 
-void MarkovProcess::setAction(int indexOfEdgeCloud, int indexOfClient, int indexOfAction){
+void
+MarkovProcess::setAction(int indexOfEdgeCloud, int indexOfClient, int indexOfAction){
     this->stateOfCloudClient->at(indexOfEdgeCloud * this->totalNumberOfEdgeCloud + indexOfClient)->action = this->actions->at(indexOfAction);
 }
 
-void MarkovProcess::setAction(MarkovState* state, MarkovAction* action){
+
+void
+MarkovProcess::setAction(MarkovState* state, MarkovAction* action){
     /* copy the action pointer */
     int cloudIndex = action->moveToIndexOfEdgeCloud;
     state->action->moveToIndexOfEdgeCloud = cloudIndex;
 }
 
-MarkovAction* MarkovProcess::getStartAction(){
+void
+MarkovProcess::setAction(MarkovState *state, int action){
+    state->action->moveToIndexOfEdgeCloud = action;
+}
+
+
+MarkovAction*
+MarkovProcess::getStartAction(){
     this->currentAction = 0;
     return this->actions->at(0);
 }
@@ -374,7 +415,8 @@ MarkovAction* MarkovProcess::getStartAction(){
  * Go through all possible actions.
  * @return Next applicable actions, <tt>null</tt> if no more action's possible.
  */
-MarkovAction* MarkovProcess::getNextAction(){
+MarkovAction*
+MarkovProcess::getNextAction(){
     currentAction ++;
     /* if current action goes to the last actions (action is based on the index of edge cloud)! */
     if(currentAction == this->totalNumberOfEdgeCloud)
@@ -383,7 +425,8 @@ MarkovAction* MarkovProcess::getNextAction(){
         return actions->at(currentAction);
 }
 
-int MarkovProcess::getAction(int positionOfEdgeCloud, int positionOfClient){
+int
+MarkovProcess::getAction(int positionOfEdgeCloud, int positionOfClient){
     /*find this action in the vector*/
     MarkovState* state = new MarkovState(positionOfEdgeCloud, positionOfClient);
     state->action = new MarkovAction();
@@ -408,11 +451,14 @@ int MarkovProcess::getAction(int positionOfEdgeCloud, int positionOfClient){
  setGamma()
  getGamma()
  */
-void MarkovProcess::setGamma(double gamma){
+void
+MarkovProcess::setGamma(double gamma){
     this->gammaDiscountFactor = gamma;
 }
 
-double MarkovProcess::getGamma(){
+
+double
+MarkovProcess::getGamma(){
     return this->gammaDiscountFactor;
 }
 
@@ -426,7 +472,8 @@ double MarkovProcess::getGamma(){
  */
 
 
-void MarkovProcess::setTransitionProbability(MarkovState* previousState, MarkovAction* action, MarkovState* transitState, double probability){
+void
+MarkovProcess::setTransitionProbability(MarkovState* previousState, MarkovAction* action, MarkovState* transitState, double probability){
     if(previousState->terminate)
         return;
     transitionStateModel* tsm = new transitionStateModel();
@@ -437,18 +484,25 @@ void MarkovProcess::setTransitionProbability(MarkovState* previousState, MarkovA
     this->transitionMap->insert(std::make_pair(tsm, probability));
 }
 
-void MarkovProcess::setTransitionProbability(double probabilityLeft, double probabilityStay, double probabilityRight){
+
+void
+MarkovProcess::setTransitionProbability(double probabilityLeft, double probabilityStay, double probabilityRight){
     this->probabilityLeft = probabilityLeft;
     this->probabilityStay = probabilityStay;
     this->probabilityRight = probabilityRight;
 }
-void MarkovProcess::setTransitionProbability(struct mobilityProbability mp){
+
+
+void
+MarkovProcess::setTransitionProbability(struct mobilityProbability mp){
     this->probabilityLeft = mp.probabilityLeft;
     this->probabilityStay = mp.probabilityStay;
     this->probabilityRight = mp.probabilityRight;
 }
 
-double MarkovProcess::getTransitionProbability_circle(MarkovState* previousState, MarkovAction* action, MarkovState* transitState){
+
+double
+MarkovProcess::getTransitionProbability_circle(MarkovState* previousState, MarkovAction* action, MarkovState* transitState){
     /**
      *	Redefine this function based on the cloud scenario
      *	transition probability is constant value based on the pair of <previousState, action, transitState>
@@ -494,7 +548,9 @@ double MarkovProcess::getTransitionProbability_circle(MarkovState* previousState
     
 }
 
-double MarkovProcess::getTransitionProbability(MarkovState* previousState, MarkovAction* action, MarkovState* transitState){
+
+double
+MarkovProcess::getTransitionProbability(MarkovState* previousState, MarkovAction* action, MarkovState* transitState){
     
     int clientPreviousPosition = previousState->positionOfMobileUser;
     int clientTransitPosition = transitState->positionOfMobileUser;
@@ -509,7 +565,9 @@ double MarkovProcess::getTransitionProbability(MarkovState* previousState, Marko
     }
 }
 
-vector<MarkovState*>* MarkovProcess::getTransition(MarkovState* state, MarkovAction* action){
+
+vector<MarkovState*>*
+MarkovProcess::getTransition(MarkovState* state, MarkovAction* action){
     this->resultingStates->clear();
     
     // circle topology !
@@ -527,17 +585,7 @@ vector<MarkovState*>* MarkovProcess::getTransition(MarkovState* state, MarkovAct
                 this->state3 =  *it;
             }
         }
-        /*
-        this->state1->positionOfEdgeCloud = action->moveToIndexOfEdgeCloud;
-        this->state1->positionOfMobileUser = 0;
-        
-        
-        this->state2->positionOfEdgeCloud = action->moveToIndexOfEdgeCloud;
-        this->state2->positionOfMobileUser = 1;
-        
-        this->state3->positionOfEdgeCloud = action->moveToIndexOfEdgeCloud;
-        this->state3->positionOfMobileUser = this->totalNumberOfClientsPosition -1;
-        */
+       
         this->resultingStates->push_back(this->state1);
         this->resultingStates->push_back(this->state2);
         this->resultingStates->push_back(this->state3);
@@ -555,16 +603,7 @@ vector<MarkovState*>* MarkovProcess::getTransition(MarkovState* state, MarkovAct
                 this->state3 =  *it;
             }
         }
-        /*
-        this->state1->positionOfEdgeCloud = action->moveToIndexOfEdgeCloud;
-        this->state1->positionOfMobileUser = state->positionOfMobileUser;
         
-        this->state2->positionOfEdgeCloud = action->moveToIndexOfEdgeCloud;
-        this->state2->positionOfMobileUser = state->positionOfMobileUser - 1;
-        
-        this->state3->positionOfEdgeCloud = action->moveToIndexOfEdgeCloud;
-        this->state3->positionOfMobileUser = 0;
-        */
         this->resultingStates->push_back(this->state1);
         this->resultingStates->push_back(this->state2);
         this->resultingStates->push_back(this->state3);
@@ -580,16 +619,6 @@ vector<MarkovState*>* MarkovProcess::getTransition(MarkovState* state, MarkovAct
                 this->state3 =  *it;
             }
         }
-        /*
-        this->state1->positionOfEdgeCloud = action->moveToIndexOfEdgeCloud;
-        this->state1->positionOfMobileUser = state->positionOfMobileUser;
-        
-        this->state2->positionOfEdgeCloud = action->moveToIndexOfEdgeCloud;
-        this->state2->positionOfMobileUser = state->positionOfMobileUser - 1;
-        
-        this->state3->positionOfEdgeCloud = action->moveToIndexOfEdgeCloud;
-        this->state3->positionOfMobileUser = state->positionOfMobileUser + 1;
-        */
         
         this->resultingStates->push_back(this->state1);
         this->resultingStates->push_back(this->state2);
@@ -600,7 +629,8 @@ vector<MarkovState*>* MarkovProcess::getTransition(MarkovState* state, MarkovAct
     }
 }
 
-vector<MarkovState*>* MarkovProcess::getTransition_noMigrate(MarkovState* state, MarkovAction* action){
+vector<MarkovState*>*
+MarkovProcess::getTransition_noMigrate(MarkovState* state, MarkovAction* action){
     this->resultingStates->clear();
     
     if(state->positionOfMobileUser == 0){
