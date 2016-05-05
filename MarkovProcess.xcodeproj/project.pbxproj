@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		2855FBA11CD94F53002BB9C2 /* MobilitySimulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2855FB9F1CD94F53002BB9C2 /* MobilitySimulation.cpp */; };
+		287930881CDBCDCE00384D31 /* SimulatedCentralController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 287930861CDBCDCE00384D31 /* SimulatedCentralController.cpp */; };
+		2879308B1CDBCDE900384D31 /* SimulatedClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 287930891CDBCDE900384D31 /* SimulatedClient.cpp */; };
+		2879308E1CDBCDFC00384D31 /* SimulatedEdgeCloud.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2879308C1CDBCDFC00384D31 /* SimulatedEdgeCloud.cpp */; };
 		28D6F03F1CB445F4009EEE42 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 28D6F03E1CB445F4009EEE42 /* main.cpp */; };
 		28D6F0471CB44613009EEE42 /* MarkovAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 28D6F0451CB44613009EEE42 /* MarkovAction.cpp */; };
 		28D6F04A1CB4464B009EEE42 /* MarkovState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 28D6F0481CB4464B009EEE42 /* MarkovState.cpp */; };
@@ -30,16 +33,22 @@
 /* Begin PBXFileReference section */
 		2855FB9F1CD94F53002BB9C2 /* MobilitySimulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MobilitySimulation.cpp; sourceTree = "<group>"; };
 		2855FBA01CD94F53002BB9C2 /* MobilitySimulation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MobilitySimulation.hpp; sourceTree = "<group>"; };
+		287930861CDBCDCE00384D31 /* SimulatedCentralController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimulatedCentralController.cpp; sourceTree = "<group>"; };
+		287930871CDBCDCE00384D31 /* SimulatedCentralController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SimulatedCentralController.hpp; sourceTree = "<group>"; };
+		287930891CDBCDE900384D31 /* SimulatedClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimulatedClient.cpp; sourceTree = "<group>"; };
+		2879308A1CDBCDE900384D31 /* SimulatedClient.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SimulatedClient.hpp; sourceTree = "<group>"; };
+		2879308C1CDBCDFC00384D31 /* SimulatedEdgeCloud.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimulatedEdgeCloud.cpp; sourceTree = "<group>"; };
+		2879308D1CDBCDFC00384D31 /* SimulatedEdgeCloud.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SimulatedEdgeCloud.hpp; sourceTree = "<group>"; };
 		28D6F03B1CB445F4009EEE42 /* MarkovProcess */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MarkovProcess; sourceTree = BUILT_PRODUCTS_DIR; };
 		28D6F03E1CB445F4009EEE42 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		28D6F0451CB44613009EEE42 /* MarkovAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MarkovAction.cpp; sourceTree = "<group>"; };
-		28D6F0461CB44613009EEE42 /* MarkovAction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarkovAction.hpp; sourceTree = "<group>"; };
-		28D6F0481CB4464B009EEE42 /* MarkovState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MarkovState.cpp; sourceTree = "<group>"; };
-		28D6F0491CB4464B009EEE42 /* MarkovState.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarkovState.hpp; sourceTree = "<group>"; };
-		28D6F04B1CB446AA009EEE42 /* MarkovProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MarkovProcess.cpp; sourceTree = "<group>"; };
-		28D6F04C1CB446AA009EEE42 /* MarkovProcess.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarkovProcess.hpp; sourceTree = "<group>"; };
-		28D6F04E1CB44724009EEE42 /* ValueIteration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ValueIteration.cpp; sourceTree = "<group>"; };
-		28D6F04F1CB44724009EEE42 /* ValueIteration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ValueIteration.hpp; sourceTree = "<group>"; };
+		28D6F0451CB44613009EEE42 /* MarkovAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MarkovAction.cpp; path = ../MarkovAction.cpp; sourceTree = "<group>"; };
+		28D6F0461CB44613009EEE42 /* MarkovAction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MarkovAction.hpp; path = ../MarkovAction.hpp; sourceTree = "<group>"; };
+		28D6F0481CB4464B009EEE42 /* MarkovState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MarkovState.cpp; path = ../MarkovState.cpp; sourceTree = "<group>"; };
+		28D6F0491CB4464B009EEE42 /* MarkovState.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = MarkovState.hpp; path = ../MarkovState.hpp; sourceTree = "<group>"; };
+		28D6F04B1CB446AA009EEE42 /* MarkovProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MarkovProcess.cpp; sourceTree = SOURCE_ROOT; };
+		28D6F04C1CB446AA009EEE42 /* MarkovProcess.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarkovProcess.hpp; sourceTree = SOURCE_ROOT; };
+		28D6F04E1CB44724009EEE42 /* ValueIteration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ValueIteration.cpp; path = ../ValueIteration.cpp; sourceTree = "<group>"; };
+		28D6F04F1CB44724009EEE42 /* ValueIteration.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ValueIteration.hpp; path = ../ValueIteration.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,19 +62,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		287930901CDBCE3700384D31 /* Simulator */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Simulator;
+			sourceTree = "<group>";
+		};
 		28D6F0321CB445F4009EEE42 = {
 			isa = PBXGroup;
 			children = (
-				28D6F0451CB44613009EEE42 /* MarkovAction.cpp */,
-				28D6F0461CB44613009EEE42 /* MarkovAction.hpp */,
-				28D6F0491CB4464B009EEE42 /* MarkovState.hpp */,
-				28D6F0481CB4464B009EEE42 /* MarkovState.cpp */,
-				28D6F04B1CB446AA009EEE42 /* MarkovProcess.cpp */,
-				28D6F04C1CB446AA009EEE42 /* MarkovProcess.hpp */,
-				28D6F04E1CB44724009EEE42 /* ValueIteration.cpp */,
-				28D6F04F1CB44724009EEE42 /* ValueIteration.hpp */,
+				287930901CDBCE3700384D31 /* Simulator */,
 				2855FBA01CD94F53002BB9C2 /* MobilitySimulation.hpp */,
 				2855FB9F1CD94F53002BB9C2 /* MobilitySimulation.cpp */,
+				287930861CDBCDCE00384D31 /* SimulatedCentralController.cpp */,
+				287930871CDBCDCE00384D31 /* SimulatedCentralController.hpp */,
+				287930891CDBCDE900384D31 /* SimulatedClient.cpp */,
+				2879308A1CDBCDE900384D31 /* SimulatedClient.hpp */,
+				2879308C1CDBCDFC00384D31 /* SimulatedEdgeCloud.cpp */,
+				2879308D1CDBCDFC00384D31 /* SimulatedEdgeCloud.hpp */,
 				28D6F03D1CB445F4009EEE42 /* MarkovProcess */,
 				28D6F03C1CB445F4009EEE42 /* Products */,
 			);
@@ -83,6 +98,14 @@
 			isa = PBXGroup;
 			children = (
 				28D6F03E1CB445F4009EEE42 /* main.cpp */,
+				28D6F0451CB44613009EEE42 /* MarkovAction.cpp */,
+				28D6F0461CB44613009EEE42 /* MarkovAction.hpp */,
+				28D6F0491CB4464B009EEE42 /* MarkovState.hpp */,
+				28D6F0481CB4464B009EEE42 /* MarkovState.cpp */,
+				28D6F04B1CB446AA009EEE42 /* MarkovProcess.cpp */,
+				28D6F04C1CB446AA009EEE42 /* MarkovProcess.hpp */,
+				28D6F04E1CB44724009EEE42 /* ValueIteration.cpp */,
+				28D6F04F1CB44724009EEE42 /* ValueIteration.hpp */,
 			);
 			path = MarkovProcess;
 			sourceTree = "<group>";
@@ -145,9 +168,12 @@
 			files = (
 				28D6F04A1CB4464B009EEE42 /* MarkovState.cpp in Sources */,
 				28D6F04D1CB446AA009EEE42 /* MarkovProcess.cpp in Sources */,
+				2879308E1CDBCDFC00384D31 /* SimulatedEdgeCloud.cpp in Sources */,
 				28D6F03F1CB445F4009EEE42 /* main.cpp in Sources */,
+				2879308B1CDBCDE900384D31 /* SimulatedClient.cpp in Sources */,
 				28D6F0501CB44724009EEE42 /* ValueIteration.cpp in Sources */,
 				28D6F0471CB44613009EEE42 /* MarkovAction.cpp in Sources */,
+				287930881CDBCDCE00384D31 /* SimulatedCentralController.cpp in Sources */,
 				2855FBA11CD94F53002BB9C2 /* MobilitySimulation.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
