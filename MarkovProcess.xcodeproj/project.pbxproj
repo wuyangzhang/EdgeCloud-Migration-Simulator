@@ -31,7 +31,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2855FB9F1CD94F53002BB9C2 /* MobilitySimulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MobilitySimulation.cpp; sourceTree = "<group>"; };
+		2855FB9F1CD94F53002BB9C2 /* MobilitySimulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = MobilitySimulation.cpp; sourceTree = "<group>"; };
 		2855FBA01CD94F53002BB9C2 /* MobilitySimulation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MobilitySimulation.hpp; sourceTree = "<group>"; };
 		287930861CDBCDCE00384D31 /* SimulatedCentralController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimulatedCentralController.cpp; sourceTree = "<group>"; };
 		287930871CDBCDCE00384D31 /* SimulatedCentralController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SimulatedCentralController.hpp; sourceTree = "<group>"; };
