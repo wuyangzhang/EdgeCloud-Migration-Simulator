@@ -34,6 +34,9 @@ SimulatedEdgeCloud::init(SimulatedCentralController* const control, bool const r
         readBaseWorkload();
     }
     appWorkload(0);
+    
+    //debug use
+    baseWorkload(0.2);
     totalWorkload(baseWorkload());
     
     _controller = control;
@@ -129,8 +132,8 @@ SimulatedEdgeCloud::totalClientNumber() const{
 }
 
 void
-SimulatedEdgeCloud::printConnectedClient(){
-    printf("[SimulatedEdgeCloud %d] connected client: \n", _myAddr);
+SimulatedEdgeCloud::printCloudState(){
+    printf("[SimulatedEdgeCloud %d] workload %f, connected client: \n", _myAddr, totalWorkload());
     for(std::vector<int>::iterator it = clientAddr.begin(); it!= clientAddr.end(); ++it){
         printf("%d\n", (*it));
     }
@@ -173,9 +176,9 @@ SimulatedEdgeCloud::reportWorkload(){
 }
 
 double
-SimulatedEdgeCloud::computeResponseTime(int clientAddr){
+SimulatedEdgeCloud::computeResponseTime(int clientPosition){
     /* calculate cost */
-    int clientCloudDistance = std::abs(clientAddr - _myAddr);
+    int clientCloudDistance = std::abs(clientPosition - _myAddr);
     clientCloudDistance =  min(clientCloudDistance, _totalEdgeCloudNumber - clientCloudDistance);
     return _baseResponse + _singleHopCost * clientCloudDistance + totalWorkload() / 0.1 * _unitLoadCost;
 }

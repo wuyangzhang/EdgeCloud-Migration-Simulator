@@ -22,6 +22,7 @@ MobilitySimulator::~MobilitySimulator(){
 void
 MobilitySimulator::simulate(){
     MarkovProcess* mdp = new MarkovProcess(_totalCloud,_totalClientPosition);
+    mdp->setGamma(0);
     _controller = new SimulatedCentralController(mdp);
     
     //initialize edge clouds
@@ -48,10 +49,20 @@ MobilitySimulator::simulate(){
     
     //start simulate mobility
     
+    for(auto i = 0; i < _controller->cloudList()->size(); i++){
+        _controller->cloudList()->at(i)->reportWorkload();
+    }
+    
+    //update Markov Decision
+    _controller->runMarkovDecision();
+    
     //client connect to server first time
     for(auto i = 0; i < _controller->clientList()->size(); i++){
-        _controller->clientList()->at(i)->connectServer();
-        _controller->clientList()->at(i)->computeResponseTime();
+        SimulatedClient* client = _controller->clientList()->at(i);
+        client->connectServer(client->connectedServer());
+        client->queryConnectServer();
+        client->computeResponseTime();
+        client->moveToNextClientPosition();
     }
     
     int step = 0;
@@ -59,13 +70,15 @@ MobilitySimulator::simulate(){
         
         step ++;
         printf("step %d \n", step);
+        
         for(auto i = 0; i < _controller->cloudList()->size(); i++){
-            _controller->cloudList()->at(i)->printConnectedClient();
+            //_controller->cloudList()->at(i)->printConnectedClient();
         }
        
         //after all connection, server report workload
         for(auto i = 0; i < _controller->cloudList()->size(); i++){
             _controller->cloudList()->at(i)->reportWorkload();
+            _controller->cloudList()->at(i)->printCloudState();
         }
         
         //update Markov Decision
@@ -74,14 +87,21 @@ MobilitySimulator::simulate(){
         //client query the connected server
         for(auto i = 0; i < _controller->clientList()->size(); i++){
             SimulatedClient* client = _controller->clientList()->at(i);
-            client->disconnectServer();
-            client->connectedServer(client->queryConnectServer());
+            client->disconnectServer(client->connectedServer());
+            client->connectServer(client->migrateServer());
+            client->queryConnectServer();
+            client->computeResponseTime();
             client->moveToNextClientPosition();
-            client->connectServer();
         }
 
     }
     
+    /*
+    for(auto i = 0; i < _controller->clientList()->size(); i++){
+        SimulatedClient* client = _controller->clientList()->at(i);
+        client->printComputeTime();
+    }
+    */
 }
 
 

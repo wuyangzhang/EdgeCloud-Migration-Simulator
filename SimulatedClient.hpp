@@ -34,15 +34,17 @@ public:
     void moveToNextClientPosition();
 
     /* connect server */
-    void connectServer();
-    void computeResponseTime();
-    
+    void connectServer(int);
+    void disconnectServer(int);
     void connectedServer(int);
     int connectedServer();
+    int migrateServer();
+    void computeResponseTime();
+    
     void generateRandomServer();
     int queryConnectServer();
-    void disconnectServer();
     bool terminateMove();
+    void printComputeTime();
 private:
     int _myAddr;
     void setMyAddr(int);
@@ -64,7 +66,10 @@ private:
     void setMobilityPattern(double, double, double);
     std::vector<SimulatedEdgeCloud*>* _cloudList;
     std::vector<double> _computeTime;
-    int _connectedServerName;
+    double _currentComputeTime;
+    std::vector<int> _connectServerList;
+    int _currentConnectedServerName;
+    int _nextConnectedServerName = -1;
     int _totalServer;
     SimulatedCentralController* _controller;
 };

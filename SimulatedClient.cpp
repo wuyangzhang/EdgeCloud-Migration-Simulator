@@ -180,42 +180,59 @@ SimulatedClient::moveToNextClientPosition(){
 
 void
 SimulatedClient::connectedServer(int servername){
-    _connectedServerName = servername;
+    _currentConnectedServerName = servername;
 }
 
 int
 SimulatedClient::connectedServer(){
-    return _connectedServerName;
+    return _currentConnectedServerName;
 }
 
 int
+SimulatedClient::migrateServer(){
+    return _nextConnectedServerName;
+}
+int
 SimulatedClient::queryConnectServer(){
-    return _controller->checkOptimalConnectedServer(_currentClientPosition, connectedServer());
+    _nextConnectedServerName = _controller->checkOptimalConnectedServer(_currentClientPosition, connectedServer());
+    return _nextConnectedServerName;
 }
 
 void
 SimulatedClient::generateRandomServer(){
-    srand(_myAddr);
+    srand(_myAddr + 2);
     int server = rand() % _totalServer;
     connectedServer(server);
 }
 
 void
-SimulatedClient::connectServer(){
-    _cloudList->at(connectedServer())->getConnected(_myAddr);
+SimulatedClient::connectServer(int server){
+    connectedServer(server);
+    _connectServerList.push_back(server);
+    _cloudList->at(server)->getConnected(_myAddr);
 }
 
 void
-SimulatedClient::disconnectServer(){
-    _cloudList->at(connectedServer())->disconnect(_myAddr);
+SimulatedClient::disconnectServer(int server){
+    _cloudList->at(server)->disconnect(_myAddr);
 }
 
 void
 SimulatedClient::computeResponseTime(){
-    _computeTime.push_back(_cloudList->at(connectedServer())->computeResponseTime(_currentClientPosition));
+    _currentComputeTime =_cloudList->at(connectedServer())->computeResponseTime(_currentClientPosition);
+    _computeTime.push_back(_currentComputeTime);
 }
 
 bool
 SimulatedClient::terminateMove(){
     return _terminateMove;
+}
+
+void
+SimulatedClient::printComputeTime(){
+    printf("[SimulatedClient %d] print compute time:\n", _myAddr);
+    for(auto i = 0; i < _computeTime.size(); i++){
+        //printf("\tconnection %d, location %d, to cloud %d, consumes %f\n",i, _mobilityPath->at(i) ,_connectServerList.at(i), _computeTime.at(i));
+        printf("[%d,%d], " ,_mobilityPath->at(i), _connectServerList.at(i));
+    }
 }

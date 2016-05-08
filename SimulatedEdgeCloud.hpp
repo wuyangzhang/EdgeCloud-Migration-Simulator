@@ -43,7 +43,7 @@ public:
     void reportWorkload();
     double computeResponseTime(int clientAddr);
     
-    void printConnectedClient();
+    void printCloudState();
 
 private:
     
