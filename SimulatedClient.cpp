@@ -195,7 +195,7 @@ SimulatedClient::queryConnectServer(){
 
 void
 SimulatedClient::generateRandomServer(){
-    srand((unsigned)time(NULL));
+    srand(_myAddr);
     int server = rand() % _totalServer;
     connectedServer(server);
 }

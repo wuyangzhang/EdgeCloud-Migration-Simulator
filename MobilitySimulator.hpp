@@ -29,7 +29,7 @@ private:
     int _totalClientNumber;
     int _totalClientPosition;
     int _totalCloud;
-    int _clientModel;
+    int _readModel;
     SimulatedCentralController* _controller;
 };
 #endif /* MobilitySimulator_hpp */

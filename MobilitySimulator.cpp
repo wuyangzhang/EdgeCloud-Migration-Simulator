@@ -10,9 +10,9 @@
 
 MobilitySimulator::MobilitySimulator(int totalClientNumber, int totalClientPosition, int totalCloud){
     _totalClientNumber = totalClientNumber;
-    _totalClientPosition = totalClientNumber;
+    _totalClientPosition = totalClientPosition;
     _totalCloud = totalCloud;
-    _clientModel = 1;
+    _readModel = false;
 }
 
 MobilitySimulator::~MobilitySimulator(){
@@ -30,35 +30,39 @@ MobilitySimulator::simulate(){
         _controller->cloudList()->push_back(cloud);
     }
     for(vector<SimulatedEdgeCloud*>::iterator it = _controller->cloudList()->begin(); it != _controller->cloudList()->end(); ++it){
-        (*it)->init(_controller,true);
+        (*it)->init(_controller,_readModel);
     }
     
     //initialize clients
     for(int i = 0; i < _totalClientNumber; i++){
         SimulatedClient* client;
-        if(_clientModel == 0)
-            client= new SimulatedClient(i, _totalClientPosition, _totalCloud,10 ,0.8, 0.1, 0.1);
+        if(!_readModel)
+            client= new SimulatedClient(i, _totalClientPosition, _totalCloud, 10 ,0.8, 0.1, 0.1);
         else
             client= new SimulatedClient(i, _totalClientPosition, _totalCloud);
         
         _controller->clientList()->push_back(client);
         client->init(_controller->cloudList(), _controller);
+        client->printMobilityPath();
     }
     
     //start simulate mobility
+    
+    //client connect to server first time
+    for(auto i = 0; i < _controller->clientList()->size(); i++){
+        _controller->clientList()->at(i)->connectServer();
+        _controller->clientList()->at(i)->computeResponseTime();
+    }
+    
     int step = 0;
     while( !_controller->clientList()->back()->terminateMove()){
+        
         step ++;
         printf("step %d \n", step);
         for(auto i = 0; i < _controller->cloudList()->size(); i++){
             _controller->cloudList()->at(i)->printConnectedClient();
         }
-
-        //client connect to server
-        for(auto i = 0; i < _controller->clientList()->size(); i++){
-            _controller->clientList()->at(i)->connectServer();
-            _controller->clientList()->at(i)->computeResponseTime();
-        }
+       
         //after all connection, server report workload
         for(auto i = 0; i < _controller->cloudList()->size(); i++){
             _controller->cloudList()->at(i)->reportWorkload();

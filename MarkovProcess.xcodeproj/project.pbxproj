@@ -69,8 +69,6 @@
 			isa = PBXGroup;
 			children = (
 				28D6F03E1CB445F4009EEE42 /* main.cpp */,
-				2855FBA01CD94F53002BB9C2 /* MobilitySimulation.hpp */,
-				2855FB9F1CD94F53002BB9C2 /* MobilitySimulation.cpp */,
 				287930921CDE7C9000384D31 /* MobilitySimulator.hpp */,
 				287930911CDE7C9000384D31 /* MobilitySimulator.cpp */,
 				287930871CDBCDCE00384D31 /* SimulatedCentralController.hpp */,
@@ -79,6 +77,8 @@
 				2879308A1CDBCDE900384D31 /* SimulatedClient.hpp */,
 				2879308D1CDBCDFC00384D31 /* SimulatedEdgeCloud.hpp */,
 				2879308C1CDBCDFC00384D31 /* SimulatedEdgeCloud.cpp */,
+				2855FBA01CD94F53002BB9C2 /* MobilitySimulation.hpp */,
+				2855FB9F1CD94F53002BB9C2 /* MobilitySimulation.cpp */,
 			);
 			name = Simulator;
 			sourceTree = "<group>";
