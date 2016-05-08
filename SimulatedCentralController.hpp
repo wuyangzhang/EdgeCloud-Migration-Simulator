@@ -10,5 +10,34 @@
 #define SimulatedCentralController_hpp
 
 #include <stdio.h>
+#include <iostream>
+#include <vector>
+
+#include "MarkovProcess.hpp"
+#include "ValueIteration.hpp"
+
+class SimulatedEdgeCloud;
+class SimulatedClient;
+
+class SimulatedCentralController{
+public:
+    SimulatedCentralController();
+    SimulatedCentralController(MarkovProcess* mdp);
+    ~SimulatedCentralController();
+    std::vector<SimulatedEdgeCloud*>* cloudList();
+    std::vector<SimulatedClient*>* clientList();
+    void updateWorkload();
+    void updateWorkload(int,double);
+    
+    void runMarkovDecision();
+    std::vector<SimulatedEdgeCloud*>* _cloudList;
+    std::vector<SimulatedClient*>* _clientList;
+    
+    int checkOptimalConnectedServer(int clientAddr, int cloudAddr);
+private:
+    
+    MarkovProcess* _mdp;
+    ValueIteration* _vi;
+};
 
 #endif /* SimulatedCentralController_hpp */

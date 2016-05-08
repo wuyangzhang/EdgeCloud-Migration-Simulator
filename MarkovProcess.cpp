@@ -11,7 +11,7 @@
  */
 
 MarkovProcess::MarkovProcess(){};
-MarkovProcess::MarkovProcess(int totalNumberOfEdgeCloud, int totalNumberOfClientsPosition, int model){
+MarkovProcess::MarkovProcess(int totalNumberOfEdgeCloud, int totalNumberOfClientsPosition){
     
     /**
      *
@@ -19,7 +19,7 @@ MarkovProcess::MarkovProcess(int totalNumberOfEdgeCloud, int totalNumberOfClient
      *	All states conditions (cloudPosition, clientPosition)
      *
      */
-    this->model = model;
+    this->model = 3;
     this->totalNumberOfEdgeCloud = totalNumberOfEdgeCloud;
     this->totalNumberOfClientsPosition = totalNumberOfClientsPosition;
     
@@ -313,6 +313,13 @@ MarkovProcess::setWorkload(vector<double> load){
     }
 }
 
+void
+MarkovProcess::setWorkload(int cloudPosition,double load){
+    
+    for(int j = 0; j < totalNumberOfClientsPosition; j++){
+        stateOfCloudClient->at(cloudPosition*totalNumberOfClientsPosition + j)->workload = load;
+    }
+}
 
 void
 MarkovProcess::setUtility(MarkovState* state, double utility){

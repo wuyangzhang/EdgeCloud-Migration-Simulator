@@ -23,7 +23,7 @@ using namespace std;
 class MarkovProcess{
 public:
     MarkovProcess();
-    MarkovProcess(int totalNumberOfEdgeCloud, int totalNumberOfClientsPosition, int model);
+    MarkovProcess(int totalNumberOfEdgeCloud, int totalNumberOfClientsPosition);
     ~MarkovProcess();
     int model;
     void printOptimizedActions();
@@ -47,6 +47,7 @@ public:
     MarkovState* getNextState();    
     
     void setWorkload(vector<double>);
+    void setWorkload(int cloudPosition, double load);
     /**
      define actions
      */
