@@ -12,7 +12,8 @@ MobilitySimulator::MobilitySimulator(int totalClientNumber, int totalClientPosit
     _totalClientNumber = totalClientNumber;
     _totalClientPosition = totalClientPosition;
     _totalCloud = totalCloud;
-    _readModel = false;
+    _readModel = true;
+    _queryModel = 1;
 }
 
 MobilitySimulator::~MobilitySimulator(){
@@ -44,7 +45,7 @@ MobilitySimulator::simulate(){
         
         _controller->clientList()->push_back(client);
         client->init(_controller->cloudList(), _controller);
-        client->printMobilityPath();
+        //client->printMobilityPath();
     }
     
     //start simulate mobility
@@ -60,7 +61,7 @@ MobilitySimulator::simulate(){
     for(auto i = 0; i < _controller->clientList()->size(); i++){
         SimulatedClient* client = _controller->clientList()->at(i);
         client->connectServer(client->connectedServer());
-        client->queryConnectServer();
+        client->queryConnectServer(_queryModel);
         client->computeResponseTime();
         client->moveToNextClientPosition();
     }
@@ -69,7 +70,7 @@ MobilitySimulator::simulate(){
     while( !_controller->clientList()->back()->terminateMove()){
         
         step ++;
-        printf("step %d \n", step);
+        //printf("step %d \n", step);
         
         for(auto i = 0; i < _controller->cloudList()->size(); i++){
             //_controller->cloudList()->at(i)->printConnectedClient();
@@ -89,19 +90,19 @@ MobilitySimulator::simulate(){
             SimulatedClient* client = _controller->clientList()->at(i);
             client->disconnectServer(client->connectedServer());
             client->connectServer(client->migrateServer());
-            client->queryConnectServer();
+            client->queryConnectServer(_queryModel);
             client->computeResponseTime();
             client->moveToNextClientPosition();
         }
 
     }
     
-    /*
+    
     for(auto i = 0; i < _controller->clientList()->size(); i++){
         SimulatedClient* client = _controller->clientList()->at(i);
-        client->printComputeTime();
+        client->printAverageTime();
     }
-    */
+    
 }
 
 

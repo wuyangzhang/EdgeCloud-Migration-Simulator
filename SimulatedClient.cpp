@@ -192,9 +192,16 @@ int
 SimulatedClient::migrateServer(){
     return _nextConnectedServerName;
 }
+
 int
-SimulatedClient::queryConnectServer(){
-    _nextConnectedServerName = _controller->checkOptimalConnectedServer(_currentClientPosition, connectedServer());
+SimulatedClient::queryConnectServer(int queryMethod){
+    
+    if(queryMethod == Markov){
+        _nextConnectedServerName = _controller->checkOptimalConnectedServer(_currentClientPosition, connectedServer());
+    }else if(queryMethod == Load){
+        _nextConnectedServerName = _controller->checkLowestLoadServer(_myAddr);;
+    }
+    
     return _nextConnectedServerName;
 }
 
@@ -235,4 +242,18 @@ SimulatedClient::printComputeTime(){
         //printf("\tconnection %d, location %d, to cloud %d, consumes %f\n",i, _mobilityPath->at(i) ,_connectServerList.at(i), _computeTime.at(i));
         printf("[%d,%d], " ,_mobilityPath->at(i), _connectServerList.at(i));
     }
+}
+
+double
+SimulatedClient::computeAverageTime(){
+    double sum = 0;
+    for(auto i = 0; i < _computeTime.size(); i++){
+        sum += _computeTime.at(i);
+    }
+    return sum / _computeTime.size();
+}
+
+void
+SimulatedClient::printAverageTime(){
+    printf("[SimulatedClient %d] average processing time of %d requests is %f\n", _myAddr ,_computeTime.size(), computeAverageTime());
 }

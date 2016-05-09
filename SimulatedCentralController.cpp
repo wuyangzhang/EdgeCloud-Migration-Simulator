@@ -5,7 +5,7 @@
 //  Created by Wuyang on 5/5/16.
 //  Copyright © 2016 Wuyang. All rights reserved.
 //
-
+#include <algorithm>
 #include "SimulatedCentralController.hpp"
 #include "SimulatedEdgeCloud.hpp"
 #include "SimulatedClient.hpp"
@@ -68,4 +68,16 @@ SimulatedCentralController::runMarkovDecision(){
 int
 SimulatedCentralController::checkOptimalConnectedServer(int clientAddr, int cloudAddr){
     return _mdp->getAction(cloudAddr, clientAddr);
+}
+
+int
+SimulatedCentralController::checkLowestLoadServer(int clientAddr){
+    struct{
+        bool operator()(SimulatedEdgeCloud* a, SimulatedEdgeCloud*b){
+            return a->totalWorkload() < b->totalWorkload();
+        }
+    } customLess;
+    
+    SimulatedEdgeCloud* cloud = *std::min_element(_cloudList->begin(), _cloudList->end(), customLess);
+    return cloud->myAddr();
 }

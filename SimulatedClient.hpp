@@ -42,9 +42,12 @@ public:
     void computeResponseTime();
     
     void generateRandomServer();
-    int queryConnectServer();
+    int queryConnectServer(int queryMethod);
     bool terminateMove();
     void printComputeTime();
+    
+    double computeAverageTime();
+    void printAverageTime();
 private:
     int _myAddr;
     void setMyAddr(int);
@@ -72,6 +75,10 @@ private:
     int _nextConnectedServerName = -1;
     int _totalServer;
     SimulatedCentralController* _controller;
+    enum queryMethod{
+        Markov = 0,
+        Load
+    };
 };
 
 #endif /* SimulatedClient_hpp */

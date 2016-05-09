@@ -34,6 +34,7 @@ public:
     std::vector<SimulatedClient*>* _clientList;
     
     int checkOptimalConnectedServer(int clientAddr, int cloudAddr);
+    int checkLowestLoadServer(int clientAddr);
 private:
     
     MarkovProcess* _mdp;
