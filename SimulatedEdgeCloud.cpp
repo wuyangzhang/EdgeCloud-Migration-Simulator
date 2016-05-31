@@ -20,8 +20,8 @@ SimulatedEdgeCloud::SimulatedEdgeCloud(const int addr){
     _controller = new SimulatedCentralController();
     
     //define cost
-    _baseResponse = 100;
-    _singleHopCost = 100;
+    _baseResponse = 120;
+    _singleHopCost = 10;
     _unitLoadCost = 100;
 }
 
@@ -175,10 +175,29 @@ SimulatedEdgeCloud::reportWorkload(){
     _controller->updateWorkload(_myAddr, totalWorkload());
 }
 
+void
+SimulatedEdgeCloud::reportConnectedClient(){
+    _controller->updateConnectedClient(_myAddr, totalClientNumber());
+}
+
 double
 SimulatedEdgeCloud::computeResponseTime(int clientPosition){
     /* calculate cost */
     int clientCloudDistance = std::abs(clientPosition - _myAddr);
     clientCloudDistance =  min(clientCloudDistance, _totalEdgeCloudNumber - clientCloudDistance);
-    return _baseResponse + _singleHopCost * clientCloudDistance + totalWorkload() / 0.1 * _unitLoadCost;
+    
+    double workloadCost = 0;
+    if(totalClientNumber() < 10){
+        workloadCost = totalClientNumber() * 1;
+    }else if(totalClientNumber() < 12){
+        workloadCost = totalClientNumber() * 3.5;
+    }else if(totalClientNumber() < 15){
+        workloadCost = totalClientNumber() * 14.5;
+    }else if(totalClientNumber() < 25){
+        workloadCost = totalClientNumber() * 38.5;
+    }else{
+        workloadCost = totalClientNumber() * 100;
+    }
+    
+    return _baseResponse + clientCloudDistance * _singleHopCost + workloadCost;
 }

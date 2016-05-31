@@ -193,6 +193,13 @@ SimulatedClient::migrateServer(){
     return _nextConnectedServerName;
 }
 
+void
+SimulatedClient::printConnectedServer(){
+    for(auto i = 0; i< _connectServerList.size(); ++i){
+        printf("[SimulatedClient %d] connected servers: %d\n", _myAddr, _connectServerList.at(i));
+    }
+}
+
 int
 SimulatedClient::queryConnectServer(int queryMethod){
     

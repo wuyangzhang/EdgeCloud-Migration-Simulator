@@ -13,7 +13,7 @@ MobilitySimulator::MobilitySimulator(int totalClientNumber, int totalClientPosit
     _totalClientPosition = totalClientPosition;
     _totalCloud = totalCloud;
     _readModel = true;
-    _queryModel = 1;
+    _queryModel = 0; //0-Markov query, 1-workload query // in controller, runMarkov() to change nerver migrate.
 }
 
 MobilitySimulator::~MobilitySimulator(){
@@ -23,9 +23,9 @@ MobilitySimulator::~MobilitySimulator(){
 void
 MobilitySimulator::simulate(){
     MarkovProcess* mdp = new MarkovProcess(_totalCloud,_totalClientPosition);
-    mdp->setGamma(0);
+    mdp->setGamma(0.5);
     _controller = new SimulatedCentralController(mdp);
-    
+
     //initialize edge clouds
     for(int i = 0; i < _totalCloud; i++){
         SimulatedEdgeCloud* cloud = new SimulatedEdgeCloud(i);
@@ -39,19 +39,19 @@ MobilitySimulator::simulate(){
     for(int i = 0; i < _totalClientNumber; i++){
         SimulatedClient* client;
         if(!_readModel)
-            client= new SimulatedClient(i, _totalClientPosition, _totalCloud, 10 ,0.8, 0.1, 0.1);
+            client= new SimulatedClient(i, _totalClientPosition, _totalCloud, 10 ,0.8, 0.1, 0.1); // pathlength, mobilityPattern
         else
             client= new SimulatedClient(i, _totalClientPosition, _totalCloud);
         
         _controller->clientList()->push_back(client);
         client->init(_controller->cloudList(), _controller);
-        //client->printMobilityPath();
     }
     
     //start simulate mobility
     
     for(auto i = 0; i < _controller->cloudList()->size(); i++){
-        _controller->cloudList()->at(i)->reportWorkload();
+        //_controller->cloudList()->at(i)->reportWorkload();
+        _controller->cloudList()->at(i)->reportConnectedClient();
     }
     
     //update Markov Decision
@@ -66,20 +66,16 @@ MobilitySimulator::simulate(){
         client->moveToNextClientPosition();
     }
     
+    
     int step = 0;
     while( !_controller->clientList()->back()->terminateMove()){
         
         step ++;
         //printf("step %d \n", step);
         
+        //after all connection, server report workload or connectClientNum
         for(auto i = 0; i < _controller->cloudList()->size(); i++){
-            //_controller->cloudList()->at(i)->printConnectedClient();
-        }
-       
-        //after all connection, server report workload
-        for(auto i = 0; i < _controller->cloudList()->size(); i++){
-            _controller->cloudList()->at(i)->reportWorkload();
-            _controller->cloudList()->at(i)->printCloudState();
+            _controller->cloudList()->at(i)->reportConnectedClient();
         }
         
         //update Markov Decision

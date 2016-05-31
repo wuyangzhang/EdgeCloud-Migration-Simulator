@@ -48,6 +48,7 @@ public:
     
     void setWorkload(vector<double>);
     void setWorkload(int cloudPosition, double load);
+    void setConnectedClient(int cloudPosition, int connectedClientNum);
     /**
      define actions
      */
@@ -80,6 +81,7 @@ public:
     double getTotalCost(MarkovState* state, MarkovAction * const action);
     double getTransmissionCost(MarkovState* state);
     double getMigrationCost(MarkovState* state, MarkovAction * const action);
+    double calculateWorkloadCost(int);
     
     double singleHopCost = 0;
     double unitWorkloadCost = 0;

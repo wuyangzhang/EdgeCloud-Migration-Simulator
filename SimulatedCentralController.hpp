@@ -15,6 +15,7 @@
 
 #include "MarkovProcess.hpp"
 #include "ValueIteration.hpp"
+#include "reactiveQoS.hpp"
 
 class SimulatedEdgeCloud;
 class SimulatedClient;
@@ -28,17 +29,22 @@ public:
     std::vector<SimulatedClient*>* clientList();
     void updateWorkload();
     void updateWorkload(int,double);
-    
+    void updateConnectedClient(int, int);
+    void updateConnectedClient();
     void runMarkovDecision();
     std::vector<SimulatedEdgeCloud*>* _cloudList;
     std::vector<SimulatedClient*>* _clientList;
     
     int checkOptimalConnectedServer(int clientAddr, int cloudAddr);
     int checkLowestLoadServer(int clientAddr);
+    
+    void printConnectedClient();
 private:
     
     MarkovProcess* _mdp;
     ValueIteration* _vi;
+    ReactiveQoS* _reQos;
+    
 };
 
 #endif /* SimulatedCentralController_hpp */

@@ -41,6 +41,7 @@ public:
     void disconnect(int clientAddr);
     void updateWorkload();
     void reportWorkload();
+    void reportConnectedClient();
     double computeResponseTime(int clientAddr);
     
     void printCloudState();

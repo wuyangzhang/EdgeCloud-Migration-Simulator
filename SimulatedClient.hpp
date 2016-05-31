@@ -39,6 +39,7 @@ public:
     void connectedServer(int);
     int connectedServer();
     int migrateServer();
+    void printConnectedServer();
     void computeResponseTime();
     
     void generateRandomServer();

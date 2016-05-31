@@ -27,11 +27,7 @@ public:
     int getNumberIteration();
     int solve();
     
-    enum{
-        MIGRATE = 0,
-        NO_MIGRATE
-    };
-    int pattern = 0;
+    int pattern = 1;
 private:
 };
 

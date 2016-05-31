@@ -39,6 +39,7 @@ public:
     double utility = 0;
     double tempUtility = 0;
     double workload = 0;
+    int connectedClient = 0;
     bool terminate = false; //duplicate parameter
 private:
     

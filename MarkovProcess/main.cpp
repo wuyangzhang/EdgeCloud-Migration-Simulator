@@ -11,7 +11,7 @@
 
 int main(){
    
-    MobilitySimulator* ms = new MobilitySimulator(20, 10, 10);
+    MobilitySimulator* ms = new MobilitySimulator(50, 10, 10);
     ms->simulate();
     ms->~MobilitySimulator();
     

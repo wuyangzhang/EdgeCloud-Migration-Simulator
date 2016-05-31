@@ -118,12 +118,13 @@ int ValueIteration::solve(){
         }
     }
     
+    //set never migrate!
     if(this->pattern ==1){
         for(vector<MarkovState*>::iterator it = mdp->stateOfCloudClient->begin(); it!=mdp->stateOfCloudClient->end();++it){
 
             mdp->setAction( *it, (*it)->positionOfEdgeCloud);
         }
     }
-    //printf("Iteration after %d rounds is done!", numIterations);
+    
     return numIterations;
 }

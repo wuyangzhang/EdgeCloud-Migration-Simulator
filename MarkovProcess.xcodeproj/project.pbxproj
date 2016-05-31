@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		28283A221CFD06340088A42B /* reactiveQoS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 28283A201CFD06340088A42B /* reactiveQoS.cpp */; };
 		2855FBA11CD94F53002BB9C2 /* MobilitySimulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2855FB9F1CD94F53002BB9C2 /* MobilitySimulation.cpp */; };
 		287930881CDBCDCE00384D31 /* SimulatedCentralController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 287930861CDBCDCE00384D31 /* SimulatedCentralController.cpp */; };
 		2879308B1CDBCDE900384D31 /* SimulatedClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 287930891CDBCDE900384D31 /* SimulatedClient.cpp */; };
@@ -32,6 +33,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		28283A201CFD06340088A42B /* reactiveQoS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = reactiveQoS.cpp; sourceTree = "<group>"; };
+		28283A211CFD06340088A42B /* reactiveQoS.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = reactiveQoS.hpp; sourceTree = "<group>"; };
 		2855FB9F1CD94F53002BB9C2 /* MobilitySimulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = MobilitySimulation.cpp; sourceTree = "<group>"; };
 		2855FBA01CD94F53002BB9C2 /* MobilitySimulation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MobilitySimulation.hpp; sourceTree = "<group>"; };
 		287930861CDBCDCE00384D31 /* SimulatedCentralController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimulatedCentralController.cpp; sourceTree = "<group>"; };
@@ -65,6 +68,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		28283A1F1CFD060B0088A42B /* reactiveQoS */ = {
+			isa = PBXGroup;
+			children = (
+				28283A201CFD06340088A42B /* reactiveQoS.cpp */,
+				28283A211CFD06340088A42B /* reactiveQoS.hpp */,
+			);
+			name = reactiveQoS;
+			sourceTree = "<group>";
+		};
 		287930901CDBCE3700384D31 /* Simulator */ = {
 			isa = PBXGroup;
 			children = (
@@ -86,6 +98,7 @@
 		28D6F0321CB445F4009EEE42 = {
 			isa = PBXGroup;
 			children = (
+				28283A1F1CFD060B0088A42B /* reactiveQoS */,
 				287930901CDBCE3700384D31 /* Simulator */,
 				28D6F03D1CB445F4009EEE42 /* MarkovProcess */,
 				28D6F03C1CB445F4009EEE42 /* Products */,
@@ -172,6 +185,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				28D6F04A1CB4464B009EEE42 /* MarkovState.cpp in Sources */,
+				28283A221CFD06340088A42B /* reactiveQoS.cpp in Sources */,
 				287930931CDE7C9000384D31 /* MobilitySimulator.cpp in Sources */,
 				28D6F04D1CB446AA009EEE42 /* MarkovProcess.cpp in Sources */,
 				2879308E1CDBCDFC00384D31 /* SimulatedEdgeCloud.cpp in Sources */,

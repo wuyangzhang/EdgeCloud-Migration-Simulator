@@ -16,9 +16,13 @@ SimulatedCentralController::SimulatedCentralController(){
 SimulatedCentralController::SimulatedCentralController(MarkovProcess* mdp){
     _cloudList = new std::vector<SimulatedEdgeCloud*>();
     _clientList = new std::vector<SimulatedClient*>();
+    
     _mdp = mdp;
     _vi = new ValueIteration(mdp);
     
+    _reQos = new ReactiveQoS();
+    _reQos->_thredshold_QoS = 150;
+    _reQos->_totalEdgeCloudNumber = _mdp->totalNumberOfEdgeCloud;
 }
 
 SimulatedCentralController::~SimulatedCentralController(){
@@ -34,6 +38,7 @@ SimulatedCentralController::~SimulatedCentralController(){
     
     delete _cloudList;
     delete _clientList;
+    delete _reQos;
 }
 
 std::vector<SimulatedEdgeCloud*>*
@@ -60,6 +65,16 @@ SimulatedCentralController::updateWorkload(int cloudPostion, double load){
 }
 
 void
+SimulatedCentralController::updateConnectedClient(int cloudPosition, int connectedClient){
+    _mdp->setConnectedClient(cloudPosition, connectedClient);
+}
+
+void
+SimulatedCentralController::updateConnectedClient(){
+    
+}
+
+void
 SimulatedCentralController::runMarkovDecision(){
     _vi->pattern = 0; // pattern 0: optimal migration, pattern 1: no migrate
     _vi->solve();
@@ -67,17 +82,31 @@ SimulatedCentralController::runMarkovDecision(){
 
 int
 SimulatedCentralController::checkOptimalConnectedServer(int clientAddr, int cloudAddr){
-    return _mdp->getAction(cloudAddr, clientAddr);
+    //todo add reactive function.
+    if(_reQos->exceedQoSThreshold(clientAddr, cloudAddr, _cloudList->at(cloudAddr)->totalClientNumber())){
+        return _mdp->getAction(cloudAddr, clientAddr); // launch Markov Decision Model
+    }else{
+        return cloudAddr; // not migrate!
+    }
 }
 
 int
 SimulatedCentralController::checkLowestLoadServer(int clientAddr){
     struct{
         bool operator()(SimulatedEdgeCloud* a, SimulatedEdgeCloud*b){
-            return a->totalWorkload() < b->totalWorkload();
+            return a->totalClientNumber() < b->totalClientNumber();
         }
     } customLess;
     
     SimulatedEdgeCloud* cloud = *std::min_element(_cloudList->begin(), _cloudList->end(), customLess);
     return cloud->myAddr();
 }
+
+void
+SimulatedCentralController::printConnectedClient(){
+    for(auto i = 0; i < cloudList()->size(); i++){
+        printf("[CentralController] cloud %d connects %d clients", i, cloudList()->at(i)->totalClientNumber());
+    }
+    printf("\n");
+}
+
