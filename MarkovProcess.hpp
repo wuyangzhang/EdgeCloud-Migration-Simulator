@@ -98,7 +98,7 @@ public:
      define 
                         discount factor
      */
-    double gammaDiscountFactor = 0.1;
+    double gammaDiscountFactor = 0;
     void setGamma(double gamma);
     double getGamma();
     

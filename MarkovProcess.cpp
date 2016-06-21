@@ -75,7 +75,7 @@ MarkovProcess::MarkovProcess(int totalNumberOfEdgeCloud, int totalNumberOfClient
      * initiate number of request per session, 2min 200 request
      */
     this->numberOfRequest_session = 5 * 60;
-    this->singleHopCost = 10;
+    this->singleHopCost = 12;
     this->unitWorkloadCost = 100;
     this->baseResponse = 120;
     this->migrateCost = 2000;
@@ -111,7 +111,6 @@ MarkovProcess::~MarkovProcess(){
 /**
  ----------------------------------------------------------------------------------------
  
- 
  Define Cost
  ----------------------------------------------------------------------------------------
  */
@@ -136,24 +135,27 @@ MarkovProcess::calculateWorkloadCost(int totalClientNumber){
 double
 MarkovProcess::calculateTotalCost_circle(MarkovState* const previousState, MarkovState* const transitState){
     
+    //previous location of edge cloud & client
     int previousEdgeCloud = previousState->positionOfEdgeCloud;
     int previousClient = previousState->positionOfMobileUser;
-    double previousWorkload = previousState->workload;
     double previousResponse = 0;
 
+    //transit location of edge cloud & client
     int transitEdgeCloud = transitState->positionOfEdgeCloud;
     int transitClient = transitState->positionOfMobileUser;
-    double transitWorkload = transitState->workload;
     double transitResponse = 0;
 
+    //responseGain, migrationCost, responseGain - migrationCost
     double responseGain = 0;
     double migrateCost = 0;
     double totalGain = 0;
 
     
     int previousClientDistance = std::abs(previousClient - previousEdgeCloud);
+    previousClientDistance = min(previousClientDistance, std::abs(totalNumberOfEdgeCloud - previousClientDistance));
+    
     int transitClientDistance = std::abs(transitClient - transitEdgeCloud);
-  
+    transitClientDistance = min(transitClientDistance, std::abs(totalNumberOfEdgeCloud - transitClientDistance));
     
     if(this->model == 2){
         if (previousClientDistance < this->totalNumberOfEdgeCloud - previousClientDistance) {
@@ -180,27 +182,20 @@ MarkovProcess::calculateTotalCost_circle(MarkovState* const previousState, Marko
         }
         
         if (transitClientDistance < this->totalNumberOfEdgeCloud - transitClientDistance) {
-            transitResponse = baseResponse + singleHopCost * transitClientDistance +  calculateWorkloadCost(transitState->connectedClient);
+            transitResponse = baseResponse + singleHopCost  * transitClientDistance +  calculateWorkloadCost(transitState->connectedClient);
         }else{
-            transitResponse = baseResponse + singleHopCost * (totalNumberOfEdgeCloud - transitClientDistance) + calculateWorkloadCost(transitState->connectedClient);
+            transitResponse = baseResponse + singleHopCost  * (totalNumberOfEdgeCloud - transitClientDistance) + calculateWorkloadCost(transitState->connectedClient);
 
         }
     }
     
     responseGain = (previousResponse - transitResponse) * this->numberOfRequest_session;
     
-    
-    int migrateDistance = std::abs(transitEdgeCloud - previousEdgeCloud);
-    
-    if(migrateDistance > this->totalNumberOfEdgeCloud -migrateDistance)
-        migrateDistance = this->totalNumberOfEdgeCloud - migrateDistance;
-    
     if(previousEdgeCloud == transitEdgeCloud){
         migrateCost = 0;
     }else{
         migrateCost = this->migrateCost;
     }
-    
 
     return totalGain = responseGain - migrateCost;
     

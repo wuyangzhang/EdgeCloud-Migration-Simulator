@@ -23,6 +23,13 @@ public:
     int _totalEdgeCloudNumber;
     double _thredshold_QoS;
     double calculateQoS(int, int, int);
+    double calculateWeightQoS(int,int,int);
     bool exceedQoSThreshold(int, int, int);
+    
+    struct mobilityPattern{
+        double left;
+        double stay;
+        double right;
+    } _pattern;
 };
 #endif /* reactiveQoS_hpp */

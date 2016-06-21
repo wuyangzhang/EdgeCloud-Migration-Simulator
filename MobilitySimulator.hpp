@@ -19,7 +19,7 @@
 
 class MobilitySimulator{
 public:
-    MobilitySimulator(int totalClientNumber, int totalClientPosition, int totalCloud);
+    MobilitySimulator(int totalCloud, int totalClientNumber, int totalClientPosition);
     ~MobilitySimulator();
     
     void simulate();
@@ -32,5 +32,11 @@ private:
     int _readModel;
     int _queryModel;
     SimulatedCentralController* _controller;
+    
+    struct mobilityPattern{
+        double left;
+        double stay;
+        double right;
+    } _pattern;
 };
 #endif /* MobilitySimulator_hpp */

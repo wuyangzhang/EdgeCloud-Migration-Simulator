@@ -22,7 +22,7 @@ SimulatedClient::SimulatedClient(int addr, int totalClientPosition, int totalSer
     generateRandomMove_circle();
     writeMove();
     _totalServer = totalServer;
-    generateRandomServer();
+    //generateRandomServer();
 }
 
 SimulatedClient::SimulatedClient(int addr, int totalClientPosition, int totalServer){
@@ -30,16 +30,20 @@ SimulatedClient::SimulatedClient(int addr, int totalClientPosition, int totalSer
     setMyAddr(addr);
     setTotalClientPosition(totalClientPosition);
     _mobilityPath = new vector<int>();
+    _timeSlot = new vector<int>();
     readMove();
+    readTimeSlot();
+    readMobilityPattern();
     setMobilityPathLength(_mobilityPath->size());
     setStartClientPosition(_mobilityPath->at(0));
     setCurrentClientPosition(_startClientPosition);
     _totalServer = totalServer;
-    generateRandomServer();
 }
 
 SimulatedClient::~SimulatedClient(){
     delete _mobilityPath;
+    delete _mobilityPattern;
+    delete _timeSlot;
 }
 
 void
@@ -57,10 +61,25 @@ void
 SimulatedClient::setStartClientPosition(int start){
     _startClientPosition = start;
 }
+
 void
 SimulatedClient::generateStartPosition(){
-    srand(_myAddr);
+    srand(_myAddr % 10);
+    //srand(NULL);
     _startClientPosition = rand() % _totalClientPosition;
+}
+
+int
+SimulatedClient::currentClientPosition(){
+    return _currentClientPosition;
+}
+
+void
+SimulatedClient::updateCurrentLocation_TimeSlot(int timeSlot){
+    // return the index of this timeSlot in vector timeSlot
+    
+    int slotIndex = find(_timeSlot->begin(), _timeSlot->end(),timeSlot) - _timeSlot->begin();
+    _currentClientPosition = _mobilityPath->at(slotIndex);
 }
 
 void
@@ -112,10 +131,15 @@ SimulatedClient::setMobilityPattern(double pleft,double pstay , double pright){
     _pRight = pright;
 }
 
+vector<double>*
+SimulatedClient::getMobilityPattern(){
+    return _mobilityPattern;
+}
+
 void
 SimulatedClient::writeMove(){
-    char fileName[100];
-    std::sprintf(fileName, "./client/moveSample_%d", _myAddr);
+    char fileName[200];
+    std::sprintf(fileName, "/Users/Wuyang/Dropbox/WINLAB/EdgeCloud/realTrace/roma_taxi/location_copy/location_%d.txt", _myAddr);
     
     std::ofstream out;
     out.open (fileName);
@@ -132,8 +156,8 @@ void
 SimulatedClient::readMove(){
     _mobilityPath->clear();
     
-    char fileName[100];
-    std::sprintf(fileName, "./client/moveSample_%d", _myAddr);
+    char fileName[200];
+    std::sprintf(fileName, "/Users/Wuyang/Dropbox/WINLAB/EdgeCloud/realTrace/roma_taxi/location/location_%d.txt", _myAddr);
     std::ifstream in;
     in.open(fileName);
     
@@ -149,6 +173,61 @@ SimulatedClient::readMove(){
         in.close();
     }
     
+}
+
+void
+SimulatedClient::readTimeSlot(){
+    _timeSlot = new vector<int>();
+    char fileName[200];
+    std::sprintf(fileName, "/Users/Wuyang/Dropbox/WINLAB/EdgeCloud/realTrace/roma_taxi/timeSlot/timeSlot_%d.txt", _myAddr);
+    std::ifstream in;
+    in.open(fileName);
+    
+    std::string line;
+    
+    if (in.is_open())
+    {
+        while ( getline (in,line) )
+        {
+            int path = atoi(line.c_str());
+            _timeSlot->push_back(path);
+        }
+        in.close();
+    }
+
+}
+
+void
+SimulatedClient::readMobilityPattern(){
+    
+    char fileName[200];
+    std::sprintf(fileName, "/Users/Wuyang/Dropbox/WINLAB/EdgeCloud/realTrace/roma_taxi/mobilityPattern/%d_Mobilepattern.txt", _myAddr);
+    std::ifstream in;
+    in.open(fileName);
+    
+    std::string line;
+    
+    if (in.is_open())
+    {
+        getline (in,line);
+        double left = atof(line.c_str());
+        
+        getline (in,line);
+        double stay = atof(line.c_str());
+        
+        getline (in,line);
+        double right = atof(line.c_str());
+        
+        setMobilityPattern(left, stay, right);
+        
+        
+        in.close();
+    }
+    _mobilityPattern = new vector<double>();
+    
+    _mobilityPattern->push_back(_pLeft);
+    _mobilityPattern->push_back(_pStay);
+    _mobilityPattern->push_back(_pRight);
 }
 
 void
@@ -178,6 +257,11 @@ SimulatedClient::moveToNextClientPosition(){
     
 }
 
+bool
+SimulatedClient::firstConnect(){
+    return _nextConnectedServerName == -1;
+}
+
 void
 SimulatedClient::connectedServer(int servername){
     _currentConnectedServerName = servername;
@@ -204,26 +288,34 @@ int
 SimulatedClient::queryConnectServer(int queryMethod){
     
     if(queryMethod == Markov){
+        double expectedQoS = _controller->predictQoS(_currentClientPosition, connectedServer());
+        _predictQoS.push_back(expectedQoS);
         _nextConnectedServerName = _controller->checkOptimalConnectedServer(_currentClientPosition, connectedServer());
     }else if(queryMethod == Load){
-        _nextConnectedServerName = _controller->checkLowestLoadServer(_myAddr);;
+        _nextConnectedServerName = _controller->checkLowestLoadServer(_myAddr);
+    }else if(queryMethod == NeverMigrate){
+        _nextConnectedServerName = _controller->checkNerverMigrateServer(connectedServer());
+        //_nextConnectedServerName = connectedServer();
+    }else if(queryMethod == Nearest){
+        _nextConnectedServerName = _controller->checkNearestServer(_currentClientPosition);
+        //_nextConnectedServerName = _currentClientPosition / 5;
     }
     
     return _nextConnectedServerName;
 }
 
-void
+int
 SimulatedClient::generateRandomServer(){
-    srand(_myAddr + 2);
-    int server = rand() % _totalServer;
-    connectedServer(server);
+    srand(_myAddr % 4);
+    //srand(NULL);
+    return rand() % 8;
 }
 
 void
 SimulatedClient::connectServer(int server){
-    connectedServer(server);
-    _connectServerList.push_back(server);
-    _cloudList->at(server)->getConnected(_myAddr);
+    connectedServer(server); // set current connected server
+    _connectServerList.push_back(server); // add this server to the list of connected servers
+    _cloudList->at(server)->getConnected(_myAddr); // ask this server to get connected
 }
 
 void
@@ -231,10 +323,11 @@ SimulatedClient::disconnectServer(int server){
     _cloudList->at(server)->disconnect(_myAddr);
 }
 
-void
+double
 SimulatedClient::computeResponseTime(){
     _currentComputeTime =_cloudList->at(connectedServer())->computeResponseTime(_currentClientPosition);
     _computeTime.push_back(_currentComputeTime);
+    return _currentComputeTime;
 }
 
 bool
@@ -247,8 +340,22 @@ SimulatedClient::printComputeTime(){
     printf("[SimulatedClient %d] print compute time:\n", _myAddr);
     for(auto i = 0; i < _computeTime.size(); i++){
         //printf("\tconnection %d, location %d, to cloud %d, consumes %f\n",i, _mobilityPath->at(i) ,_connectServerList.at(i), _computeTime.at(i));
-        printf("[%d,%d], " ,_mobilityPath->at(i), _connectServerList.at(i));
+        printf("path %d, server %d, predictQoS %f, computeTime %f\n" ,_mobilityPath->at(i), _connectServerList.at(i), _predictQoS.at(i),_computeTime.at(i));
+        
+        //printf("path %d, server %d, computeTime %f\n" ,_mobilityPath->at(i), _connectServerList.at(i),_computeTime.at(i));
     }
+}
+
+void
+SimulatedClient::printPredictQoS(){
+    printf("[SimulatedClient %d] print predicted response time:\n", _myAddr);
+    for(auto i = 0; i < _predictQoS.size(); i++){
+        //printf("\tconnection %d, location %d, to cloud %d, consumes %f\n",i, _mobilityPath->at(i) ,_connectServerList.at(i), _computeTime.at(i));
+        printf("path %d, server %d, predictQoS %f, computeTime %f\n" ,_mobilityPath->at(i), _connectServerList.at(i), _predictQoS.at(i),_computeTime.at(i));
+        
+        //printf("path %d, server %d, computeTime %f\n" ,_mobilityPath->at(i), _connectServerList.at(i),_computeTime.at(i));
+    }
+
 }
 
 double

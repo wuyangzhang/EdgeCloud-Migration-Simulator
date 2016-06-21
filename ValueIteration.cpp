@@ -20,6 +20,7 @@ void ValueIteration::setError(double epsilon){
 int ValueIteration::solve(){
     
     double gamma = mdp->getGamma();
+    
     double threshold;
     
     if(gamma == 1){
@@ -27,7 +28,7 @@ int ValueIteration::solve(){
     }else{
         threshold = epsilon * (1 - gamma) /gamma;
     }
-    //printf("[ValueIteration] start to solve MDP with threshold %f\n",threshold);
+    
 
     bool finished = false;
     
@@ -36,10 +37,6 @@ int ValueIteration::solve(){
     /* main part of Value Iteration */
     while(finished != true){
         double maxError = 0;
-        /*
-         *	this for loop cacluates MIN_action.sum T(s,a,s') * (cost + y*U(s')) for all states
-         */
-        
         for(MarkovState* state = mdp->getStartState(); state != nullptr; state = mdp->getNextState()){
             
             double utility = mdp->getUtility(state);
@@ -77,7 +74,6 @@ int ValueIteration::solve(){
                     
                 }
                 
-          
                 /* looking for the max gain */
                 
                 if(nextUtil > maxCurrentUtil){

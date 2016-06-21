@@ -20,14 +20,14 @@ public:
     /**
      * The error threshold to stop the iteration
      */
-    double epsilon = 1e-4;
+    double epsilon = 100;
     void setError(double epsilon);
     
     int numIterations;
     int getNumberIteration();
     int solve();
     
-    int pattern = 1;
+    int pattern = 0;
 private:
 };
 

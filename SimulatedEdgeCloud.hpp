@@ -33,8 +33,12 @@ public:
     double appWorkload() const;
     void totalClientNumber(const int);
     int totalClientNumber() const;
-    
+    int reservedClientNumber()const;
+    void reservedClientNumber(int);
+    void addPotentialClientNumber();
+    void substractPotentialClientNumber(int);
     void init(SimulatedCentralController* const, bool const);
+    
     /* event of server */
     void generateBaseWorkload();
     void getConnected(int clientAddr);
@@ -45,7 +49,7 @@ public:
     double computeResponseTime(int clientAddr);
     
     void printCloudState();
-
+    
 private:
     
     int _myAddr;
@@ -58,6 +62,7 @@ private:
     std::vector<int> clientAddr;
     int _totalClientNumber;
     int _totalEdgeCloudNumber;
+    int _potentialClient;
     //define basic cost
     double _unitLoadCost;
     double _baseResponse;

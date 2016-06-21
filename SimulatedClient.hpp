@@ -27,28 +27,40 @@ public:
     void setRandomMove_circle();
     void writeMove();
     void readMove();
+    void readTimeSlot();
+    void readMobilityPattern();
     void printMobilityPath();
     
     void init(std::vector<SimulatedEdgeCloud*>* cloudList, SimulatedCentralController* controller);
     /* move */
     void moveToNextClientPosition();
-
+    void setMobilityPattern(double, double, double);
+    void updateCurrentLocation_TimeSlot(int timeSlot);
+    int currentClientPosition();
+    
     /* connect server */
+    bool firstConnect();
     void connectServer(int);
     void disconnectServer(int);
     void connectedServer(int);
     int connectedServer();
     int migrateServer();
     void printConnectedServer();
-    void computeResponseTime();
-    
-    void generateRandomServer();
+    double computeResponseTime();
+    int generateRandomServer();
     int queryConnectServer(int queryMethod);
     bool terminateMove();
     void printComputeTime();
     
     double computeAverageTime();
     void printAverageTime();
+    
+    void printPredictQoS();
+    std::vector<double> _computeTime;
+    std::vector<double> _predictQoS;
+    
+    std::vector<int>* _timeSlot;
+    std::vector<double>* getMobilityPattern();
 private:
     int _myAddr;
     void setMyAddr(int);
@@ -66,19 +78,23 @@ private:
     int _currentMoveStep = 0 ;
     bool _terminateMove = false;
     std::vector<int>* _mobilityPath;
-    double _pLeft, _pStay, _pRight;
-    void setMobilityPattern(double, double, double);
+    double _pLeft, _pStay, _pRight; //mobility Pattern
+    
     std::vector<SimulatedEdgeCloud*>* _cloudList;
-    std::vector<double> _computeTime;
     double _currentComputeTime;
     std::vector<int> _connectServerList;
     int _currentConnectedServerName;
     int _nextConnectedServerName = -1;
     int _totalServer;
     SimulatedCentralController* _controller;
+    
+    std::vector<double>* _mobilityPattern;
+    
     enum queryMethod{
         Markov = 0,
-        Load
+        Load,
+        NeverMigrate,
+        Nearest
     };
 };
 

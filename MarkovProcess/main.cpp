@@ -10,10 +10,10 @@
 //writeCLient does not work
 
 int main(){
-   
-    MobilitySimulator* ms = new MobilitySimulator(50, 10, 10);
+
+    MobilitySimulator* ms = new MobilitySimulator(20, 183, 20);
     ms->simulate();
     ms->~MobilitySimulator();
-    
     return 0;
 }
+

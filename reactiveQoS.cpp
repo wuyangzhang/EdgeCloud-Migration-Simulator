@@ -9,10 +9,8 @@
 #include "reactiveQoS.hpp"
 
 ReactiveQoS::ReactiveQoS(){
-    //this->clientLocation = 0;
-    //this->edgeCloudLocation = 0;
     _baseResponse = 120;
-    _singleHopCost = 10;
+    _singleHopCost = 12;
     _totalEdgeCloudNumber = 0;
     this->_thredshold_QoS = 0;
 }
@@ -24,7 +22,7 @@ ReactiveQoS::~ReactiveQoS(){
 double
 ReactiveQoS::calculateQoS(int clientLocation, int edgeCloudLocation, int connectClientNum){
     int clientCloudDistance = std::abs(clientLocation - edgeCloudLocation);
-    clientCloudDistance =  std::min(clientCloudDistance, _totalEdgeCloudNumber - clientCloudDistance);
+    clientCloudDistance =  std::min(clientCloudDistance, std::abs(_totalEdgeCloudNumber - clientCloudDistance));
     
     double workloadCost = 0;
     if(connectClientNum < 10){
@@ -42,9 +40,16 @@ ReactiveQoS::calculateQoS(int clientLocation, int edgeCloudLocation, int connect
     return _baseResponse + clientCloudDistance * _singleHopCost + workloadCost;
 }
 
+double
+ReactiveQoS::calculateWeightQoS(int clientLocation, int edgeCloudLocation, int connectClientNum){
+    return this->calculateQoS(clientLocation, edgeCloudLocation, connectClientNum)*_pattern.stay +
+    this->calculateQoS(clientLocation - 1, edgeCloudLocation, connectClientNum) * _pattern.left + this->calculateQoS(clientLocation + 1, edgeCloudLocation, connectClientNum) * _pattern.right;
+}
+
 bool
 ReactiveQoS::exceedQoSThreshold(int clientLocation, int edgeCloudLocation, int connectClientNum){
-    if(this->calculateQoS(clientLocation, edgeCloudLocation, connectClientNum) > _thredshold_QoS){
+   
+    if( calculateWeightQoS(clientLocation, edgeCloudLocation, connectClientNum) > _thredshold_QoS){
         return true;
     }else
         return false;

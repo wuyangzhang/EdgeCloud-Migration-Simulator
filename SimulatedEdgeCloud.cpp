@@ -17,12 +17,16 @@ SimulatedEdgeCloud::SimulatedEdgeCloud(const int addr){
     _myAddr = addr;
    
     totalClientNumber(0);
+    _potentialClient = 0;
     _controller = new SimulatedCentralController();
     
     //define cost
     _baseResponse = 120;
-    _singleHopCost = 10;
+    _singleHopCost = 12;
     _unitLoadCost = 100;
+    
+    //client
+    _potentialClient = 0;
 }
 
 void
@@ -131,6 +135,26 @@ SimulatedEdgeCloud::totalClientNumber() const{
     return _totalClientNumber;
 }
 
+int
+SimulatedEdgeCloud::reservedClientNumber()const{
+    return _potentialClient;
+}
+
+void
+SimulatedEdgeCloud::reservedClientNumber(int num){
+    _potentialClient = num;
+}
+
+void
+SimulatedEdgeCloud::addPotentialClientNumber(){
+    _potentialClient++;
+}
+
+void
+SimulatedEdgeCloud::substractPotentialClientNumber(int num){
+    _potentialClient -= num;
+}
+
 void
 SimulatedEdgeCloud::printCloudState(){
     printf("[SimulatedEdgeCloud %d] workload %f, connected client: \n", _myAddr, totalWorkload());
@@ -148,19 +172,17 @@ SimulatedEdgeCloud::generateBaseWorkload(){
 
 void
 SimulatedEdgeCloud::getConnected(int cliAddr){
-    //add client, updateworkload, report workload
+    //add client to client list, total client add one, reserverd client minus one, report workload
     clientAddr.push_back(cliAddr);
-    int totalClient = totalClientNumber();
-    totalClientNumber(++totalClient);
-    updateWorkload();
+    totalClientNumber(totalClientNumber() + 1);
+    reservedClientNumber(reservedClientNumber() - 1);
 }
 
 void
 SimulatedEdgeCloud::disconnect(int cliAddr){
+    // remove this client from client list, total client minus one
     clientAddr.erase(std::remove(clientAddr.begin(), clientAddr.end(),cliAddr), clientAddr.end());
-    int totalClient = totalClientNumber();
-    totalClientNumber(--totalClient);
-    updateWorkload();
+    totalClientNumber(totalClientNumber() - 1);
 }
 
 void
@@ -177,14 +199,14 @@ SimulatedEdgeCloud::reportWorkload(){
 
 void
 SimulatedEdgeCloud::reportConnectedClient(){
-    _controller->updateConnectedClient(_myAddr, totalClientNumber());
+    _controller->updateConnectedClient(_myAddr, totalClientNumber() + reservedClientNumber());
 }
 
 double
 SimulatedEdgeCloud::computeResponseTime(int clientPosition){
     /* calculate cost */
     int clientCloudDistance = std::abs(clientPosition - _myAddr);
-    clientCloudDistance =  min(clientCloudDistance, _totalEdgeCloudNumber - clientCloudDistance);
+    clientCloudDistance =  min(clientCloudDistance, std::abs(_totalEdgeCloudNumber - clientCloudDistance));
     
     double workloadCost = 0;
     if(totalClientNumber() < 10){
@@ -198,6 +220,6 @@ SimulatedEdgeCloud::computeResponseTime(int clientPosition){
     }else{
         workloadCost = totalClientNumber() * 100;
     }
-    
+    //printf("clientCloudDistance %d, totalClientNumber %d, workloadCost %f\n", clientCloudDistance, totalClientNumber(), workloadCost);
     return _baseResponse + clientCloudDistance * _singleHopCost + workloadCost;
 }

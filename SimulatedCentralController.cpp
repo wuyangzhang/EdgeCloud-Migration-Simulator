@@ -16,13 +16,17 @@ SimulatedCentralController::SimulatedCentralController(){
 SimulatedCentralController::SimulatedCentralController(MarkovProcess* mdp){
     _cloudList = new std::vector<SimulatedEdgeCloud*>();
     _clientList = new std::vector<SimulatedClient*>();
-    
+    clientList_timeSlot = new std::vector<int>();
+
     _mdp = mdp;
     _vi = new ValueIteration(mdp);
     
     _reQos = new ReactiveQoS();
-    _reQos->_thredshold_QoS = 150;
+    _reQos->_thredshold_QoS = 160;
     _reQos->_totalEdgeCloudNumber = _mdp->totalNumberOfEdgeCloud;
+    _reQos->_pattern.left = _mdp->probabilityLeft;
+    _reQos->_pattern.stay = _mdp->probabilityStay;
+    _reQos->_pattern.right = _mdp->probabilityRight;
 }
 
 SimulatedCentralController::~SimulatedCentralController(){
@@ -38,6 +42,7 @@ SimulatedCentralController::~SimulatedCentralController(){
     
     delete _cloudList;
     delete _clientList;
+    delete clientList_timeSlot;
     delete _reQos;
 }
 
@@ -49,6 +54,11 @@ SimulatedCentralController::cloudList(){
 std::vector<SimulatedClient*>*
 SimulatedCentralController::clientList(){
     return _clientList;
+}
+
+MarkovProcess*
+SimulatedCentralController::getMDP(){
+    return _mdp;
 }
 
 void
@@ -75,38 +85,145 @@ SimulatedCentralController::updateConnectedClient(){
 }
 
 void
+SimulatedCentralController::updateMDP_TransitionProbability(vector<double>* pattern){
+    _mdp->setTransitionProbability(pattern->at(0), pattern->at(1), pattern->at(2));
+}
+
+void
 SimulatedCentralController::runMarkovDecision(){
     _vi->pattern = 0; // pattern 0: optimal migration, pattern 1: no migrate
     _vi->solve();
 }
 
+double
+SimulatedCentralController::predictQoS(int clientAddr, int cloudAddr){
+    return _reQos->calculateWeightQoS(clientAddr, cloudAddr, _cloudList->at(cloudAddr)->totalClientNumber());
+}
+
+
+vector<int>*
+SimulatedCentralController::checkClient_timeSlot(int timeSlot){
+    clientList_timeSlot->clear();
+    for(int i = 0; i < clientList()->size(); i++){
+        if(std::find(clientList()->at(i)->_timeSlot->begin(), clientList()->at(i)->_timeSlot->end(), timeSlot) != clientList()->at(i)->_timeSlot->end()){
+            clientList_timeSlot->push_back(i);
+        }
+    }
+    return clientList_timeSlot;
+}
+
 int
 SimulatedCentralController::checkOptimalConnectedServer(int clientAddr, int cloudAddr){
-    //todo add reactive function.
-    if(_reQos->exceedQoSThreshold(clientAddr, cloudAddr, _cloudList->at(cloudAddr)->totalClientNumber())){
-        return _mdp->getAction(cloudAddr, clientAddr); // launch Markov Decision Model
+    
+    if(_reQos->exceedQoSThreshold(clientAddr, cloudAddr, _cloudList->at(cloudAddr)->totalClientNumber()+_cloudList->at(cloudAddr)->reservedClientNumber())){
+        // add one reserverd client to target edge cloud
+        int targetCloud = _mdp->getAction(cloudAddr, clientAddr);
+        cloudList()->at(targetCloud)->addPotentialClientNumber();
+        return  targetCloud;// launch Markov Decision Model
     }else{
+        
+        cloudList()->at(cloudAddr)->addPotentialClientNumber();
         return cloudAddr; // not migrate!
     }
 }
 
 int
-SimulatedCentralController::checkLowestLoadServer(int clientAddr){
+SimulatedCentralController::checkLowestLoadServer(int clientID){
     struct{
         bool operator()(SimulatedEdgeCloud* a, SimulatedEdgeCloud*b){
-            return a->totalClientNumber() < b->totalClientNumber();
+            return a->totalClientNumber() + a->reservedClientNumber() < b->totalClientNumber() + b->reservedClientNumber();
         }
     } customLess;
     
     SimulatedEdgeCloud* cloud = *std::min_element(_cloudList->begin(), _cloudList->end(), customLess);
+    // add one reserverd client to target edge cloud, substract one potential client
+    cloudList()->at(cloud->myAddr())->reservedClientNumber(cloudList()->at(cloud->myAddr())->reservedClientNumber() + 1);
+    //cloudList()->at(clientList()->at(clientID)->connectedServer())->substractPotentialClientNumber(1);
+
     return cloud->myAddr();
+}
+
+int
+SimulatedCentralController::checkNerverMigrateServer(int cloudAddr){
+    cloudList()->at(cloudAddr)->addPotentialClientNumber();
+    return cloudAddr;
+}
+
+int
+SimulatedCentralController::checkNearestServer(int clientLocation){
+    int server = clientLocation ;
+    cloudList()->at(server)->addPotentialClientNumber();
+    return server;
 }
 
 void
 SimulatedCentralController::printConnectedClient(){
     for(auto i = 0; i < cloudList()->size(); i++){
-        printf("[CentralController] cloud %d connects %d clients", i, cloudList()->at(i)->totalClientNumber());
+        printf("[CentralController] cloud %d connects %d clients\n", i, cloudList()->at(i)->totalClientNumber());
     }
     printf("\n");
 }
+
+void
+SimulatedCentralController::computeAverageResponseTime(){
+    
+    for(auto i = 0; i < clientList()->at(1)->_computeTime.size(); ++i){
+        clientAverageResponseTime.push_back(0);
+    }
+    
+    for(auto i = 0; i < clientList()->size(); ++i){
+        for(auto j = 0; j < clientList()->at(i)->_computeTime.size(); ++j){
+            clientAverageResponseTime.at(j) += clientList()->at(i)->_computeTime.at(j);
+        }
+    }
+    for(auto i = 0; i < clientAverageResponseTime.size(); ++i){
+        clientAverageResponseTime.at(i) /= clientList()->size();
+    }
+}
+
+void
+SimulatedCentralController::computeAveragePredictTime(){
+    for(auto i = 0; i < clientList()->at(1)->_predictQoS.size(); ++i){
+        clientPredictResponseTime.push_back(0);
+    }
+    
+    for(auto i = 0; i < clientList()->size(); ++i){
+        for(auto j = 0; j < clientList()->at(i)->_predictQoS.size(); ++j){
+            clientPredictResponseTime.at(j) += clientList()->at(i)->_predictQoS.at(j);
+        }
+    }
+    for(auto i = 0; i < clientPredictResponseTime.size(); ++i){
+        clientPredictResponseTime.at(i) /= clientList()->size();
+    }
+}
+
+void
+SimulatedCentralController::addTimeSlotResponseTime(double time){
+    timeSlotResponseTime.push_back(time);
+}
+void
+SimulatedCentralController::printAverageResponseTime(){
+    for(auto i = 0; i < clientAverageResponseTime.size(); ++i){
+        printf("[CentralController] move %d average response time %f\n", i, clientAverageResponseTime.at(i));
+    }
+    printf("\n");
+
+}
+
+void
+SimulatedCentralController::printAveragePredictTime(){
+    for(auto i = 0; i < clientPredictResponseTime.size(); ++i){
+        printf("[CentralController] move %d average predict response time %f\n", i, clientPredictResponseTime.at(i));
+    }
+    printf("\n");
+}
+
+void
+SimulatedCentralController::printTimeSlotResponseTime(){
+    for(auto i = 0; i < timeSlotResponseTime.size(); ++i){
+        printf("[CentralController] slot %d average response time %f\n", i, timeSlotResponseTime.at(i));
+    }
+    printf("\n");
+}
+
 
