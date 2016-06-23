@@ -22,7 +22,7 @@ SimulatedEdgeCloud::SimulatedEdgeCloud(const int addr){
     
     //define cost
     _baseResponse = 120;
-    _singleHopCost = 12;
+    _singleHopCost = 20;
     _unitLoadCost = 100;
     
     //client

@@ -20,7 +20,7 @@ public:
     /**
      * The error threshold to stop the iteration
      */
-    double epsilon = 100;
+    double epsilon = 10000000;
     void setError(double epsilon);
     
     int numIterations;

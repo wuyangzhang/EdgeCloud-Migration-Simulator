@@ -20,7 +20,7 @@ MobilitySimulator::MobilitySimulator(int totalCloud, int totalClientNumber, int 
     _totalClientPosition = totalClientPosition;
     _pattern.left = 0.8, _pattern.stay = 0.1, _pattern.right = 0.1;
     _readModel = true;
-    _queryModel = 0; //0-Markov query, 1-workload query, 2-neverMigrate, 3-closest // in controller, runMarkov() to change nerver migrate.
+    _queryModel = 2; //0-Markov query, 1-workload query, 2-neverMigrate, 3-closest // in controller, runMarkov() to change nerver migrate.
 }
 
 MobilitySimulator::~MobilitySimulator(){
@@ -80,17 +80,15 @@ MobilitySimulator::simulate(){
             client->updateCurrentLocation_TimeSlot(timeSlot);
             
             if(client->firstConnect()){
-                client->queryConnectServer(1); // first query always return the nearest server
+                client->queryConnectServer(3); // first query always return the nearest server
                 client->connectServer(client->migrateServer());
             }else{
                 client->disconnectServer(client->connectedServer());
                 client->connectServer(client->migrateServer());
-                //cout<<client->connectedServer()<<endl;
             }
             
             double responseTime = client->computeResponseTime();
             responseTimeCollect.push_back(responseTime);
-            
             
             client->queryConnectServer(_queryModel);
 
@@ -100,8 +98,6 @@ MobilitySimulator::simulate(){
                 _controller->updateMDP_TransitionProbability(client->getMobilityPattern());
                 _controller->runMarkovDecision();
             }
-            
-            
             
             //cout<<"c"<<client_slot->at(i)<<" rsp:"<<responseTime<<" l"<<client->currentClientPosition()<<" svr:"<<client->connectedServer()<<" num:"<<_controller->cloudList()->at(client->connectedServer())->totalClientNumber()<<" m"<<client->migrateServer()<<endl;
         }
@@ -113,7 +109,7 @@ MobilitySimulator::simulate(){
         
         double averageResponseTime = totalResponseTime / responseTimeCollect.size();
         
-        cout <<"\n"<< averageResponseTime<<endl;
+        //cout <<timeSlot<<" "<<averageResponseTime<<endl;
         _controller->addTimeSlotResponseTime(averageResponseTime);
         responseTimeCollect.clear();
 

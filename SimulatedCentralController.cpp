@@ -116,7 +116,6 @@ int
 SimulatedCentralController::checkOptimalConnectedServer(int clientAddr, int cloudAddr){
     
     if(_reQos->exceedQoSThreshold(clientAddr, cloudAddr, _cloudList->at(cloudAddr)->totalClientNumber()+_cloudList->at(cloudAddr)->reservedClientNumber())){
-        // add one reserverd client to target edge cloud
         int targetCloud = _mdp->getAction(cloudAddr, clientAddr);
         cloudList()->at(targetCloud)->addPotentialClientNumber();
         return  targetCloud;// launch Markov Decision Model
@@ -136,10 +135,7 @@ SimulatedCentralController::checkLowestLoadServer(int clientID){
     } customLess;
     
     SimulatedEdgeCloud* cloud = *std::min_element(_cloudList->begin(), _cloudList->end(), customLess);
-    // add one reserverd client to target edge cloud, substract one potential client
     cloudList()->at(cloud->myAddr())->reservedClientNumber(cloudList()->at(cloud->myAddr())->reservedClientNumber() + 1);
-    //cloudList()->at(clientList()->at(clientID)->connectedServer())->substractPotentialClientNumber(1);
-
     return cloud->myAddr();
 }
 
