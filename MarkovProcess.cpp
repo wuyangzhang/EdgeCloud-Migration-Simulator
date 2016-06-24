@@ -75,7 +75,7 @@ MarkovProcess::MarkovProcess(int totalNumberOfEdgeCloud, int totalNumberOfClient
      * initiate number of request per session, 2min 200 request
      */
     this->numberOfRequest_session = 5 * 60;
-    this->singleHopCost = 12;
+    this->singleHopCost = 8;
     this->unitWorkloadCost = 100;
     this->baseResponse = 120;
     this->migrateCost = 2000;

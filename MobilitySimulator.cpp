@@ -116,7 +116,7 @@ MobilitySimulator::simulate(){
     }
     
     _controller->printTimeSlotResponseTime();
-    
+    _controller->printServiceCount();
     //_controller->computeAverageResponseTime();
     //_controller->printAverageResponseTime();
 

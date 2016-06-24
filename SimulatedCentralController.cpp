@@ -118,10 +118,11 @@ SimulatedCentralController::checkOptimalConnectedServer(int clientAddr, int clou
     if(_reQos->exceedQoSThreshold(clientAddr, cloudAddr, _cloudList->at(cloudAddr)->totalClientNumber()+_cloudList->at(cloudAddr)->reservedClientNumber())){
         int targetCloud = _mdp->getAction(cloudAddr, clientAddr);
         cloudList()->at(targetCloud)->addPotentialClientNumber();
+        cloudList()->at(targetCloud)->serviceCount++;
         return  targetCloud;// launch Markov Decision Model
     }else{
-        
         cloudList()->at(cloudAddr)->addPotentialClientNumber();
+        cloudList()->at(cloudAddr)->serviceCount++;
         return cloudAddr; // not migrate!
     }
 }
@@ -136,12 +137,14 @@ SimulatedCentralController::checkLowestLoadServer(int clientID){
     
     SimulatedEdgeCloud* cloud = *std::min_element(_cloudList->begin(), _cloudList->end(), customLess);
     cloudList()->at(cloud->myAddr())->reservedClientNumber(cloudList()->at(cloud->myAddr())->reservedClientNumber() + 1);
+    cloudList()->at(cloud->myAddr())->serviceCount++;
     return cloud->myAddr();
 }
 
 int
 SimulatedCentralController::checkNerverMigrateServer(int cloudAddr){
     cloudList()->at(cloudAddr)->addPotentialClientNumber();
+    cloudList()->at(cloudAddr)->serviceCount++;
     return cloudAddr;
 }
 
@@ -149,6 +152,7 @@ int
 SimulatedCentralController::checkNearestServer(int clientLocation){
     int server = clientLocation ;
     cloudList()->at(server)->addPotentialClientNumber();
+    cloudList()->at(server)->serviceCount++;
     return server;
 }
 
@@ -222,4 +226,11 @@ SimulatedCentralController::printTimeSlotResponseTime(){
     printf("\n");
 }
 
+void
+SimulatedCentralController::printServiceCount(){
+    for(auto i = 0; i < cloudList()->size(); ++i){
+        printf("CentralController cloud %d service time %d\n",i, cloudList()->at(i)->serviceCount++);
+    }
+    printf("\n");
 
+}

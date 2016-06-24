@@ -157,7 +157,7 @@ SimulatedClient::readMove(){
     _mobilityPath->clear();
     
     char fileName[200];
-    std::sprintf(fileName, "/Users/Wuyang/Dropbox/WINLAB/EdgeCloud/realTrace/roma_taxi/location/location_%d.txt", _myAddr);
+    std::sprintf(fileName, "/Users/Wuyang/Desktop/WINLAB/EdgeCloud/realTrace/roma_taxi/location/location_%d.txt", _myAddr);
     std::ifstream in;
     in.open(fileName);
     
@@ -179,7 +179,7 @@ void
 SimulatedClient::readTimeSlot(){
     _timeSlot = new vector<int>();
     char fileName[200];
-    std::sprintf(fileName, "/Users/Wuyang/Dropbox/WINLAB/EdgeCloud/realTrace/roma_taxi/timeSlot/timeSlot_%d.txt", _myAddr);
+    std::sprintf(fileName, "/Users/Wuyang/Desktop/WINLAB/EdgeCloud/realTrace/roma_taxi/timeSlot/timeSlot_%d.txt", _myAddr);
     std::ifstream in;
     in.open(fileName);
     
@@ -201,7 +201,7 @@ void
 SimulatedClient::readMobilityPattern(){
     
     char fileName[200];
-    std::sprintf(fileName, "/Users/Wuyang/Dropbox/WINLAB/EdgeCloud/realTrace/roma_taxi/mobilityPattern/%d_Mobilepattern.txt", _myAddr);
+    std::sprintf(fileName, "/Users/Wuyang/Desktop/WINLAB/EdgeCloud/realTrace/roma_taxi/mobilityPattern/%d_Mobilepattern.txt", _myAddr);
     std::ifstream in;
     in.open(fileName);
     

@@ -16,13 +16,13 @@
 SimulatedEdgeCloud::SimulatedEdgeCloud(const int addr){
     _myAddr = addr;
    
-    totalClientNumber(0);
+    totalClientNumber(4);
     _potentialClient = 0;
     _controller = new SimulatedCentralController();
     
     //define cost
     _baseResponse = 120;
-    _singleHopCost = 20;
+    _singleHopCost = 8;
     _unitLoadCost = 100;
     
     //client

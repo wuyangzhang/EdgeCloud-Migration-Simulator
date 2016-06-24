@@ -38,7 +38,7 @@ public:
     void addPotentialClientNumber();
     void substractPotentialClientNumber(int);
     void init(SimulatedCentralController* const, bool const);
-    
+    int serviceCount = 0;
     /* event of server */
     void generateBaseWorkload();
     void getConnected(int clientAddr);
@@ -47,7 +47,6 @@ public:
     void reportWorkload();
     void reportConnectedClient();
     double computeResponseTime(int clientAddr);
-    
     void printCloudState();
     
 private:

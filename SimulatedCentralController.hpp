@@ -45,7 +45,7 @@ public:
     int checkNearestServer(int clientLocation);
     double predictQoS(int clientAddr, int cloudAddr);
     void printConnectedClient();
-    
+    void printServiceCount();
     /* analyze performance */
     void computeAverageResponseTime();
     void computeAveragePredictTime();
@@ -53,6 +53,7 @@ public:
     void printAveragePredictTime();
     void addTimeSlotResponseTime(double time);
     void printTimeSlotResponseTime();
+    
 private:
     
     MarkovProcess* _mdp;
