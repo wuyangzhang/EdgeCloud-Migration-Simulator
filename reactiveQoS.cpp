@@ -10,7 +10,7 @@
 
 ReactiveQoS::ReactiveQoS(){
     _baseResponse = 120;
-    _singleHopCost = 8;
+    _singleHopCost = 14;
     _totalEdgeCloudNumber = 0;
     this->_thredshold_QoS = 0;
 }

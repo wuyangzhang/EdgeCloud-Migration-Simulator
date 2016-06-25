@@ -20,7 +20,7 @@ MobilitySimulator::MobilitySimulator(int totalCloud, int totalClientNumber, int 
     _totalClientPosition = totalClientPosition;
     _pattern.left = 0.8, _pattern.stay = 0.1, _pattern.right = 0.1;
     _readModel = true;
-    _queryModel = 2; //0-Markov query, 1-workload query, 2-neverMigrate, 3-closest // in controller, runMarkov() to change nerver migrate.
+    _queryModel = 0; //0-Markov query, 1-workload query, 2-neverMigrate, 3-closest // in controller, runMarkov() to change nerver migrate.
 }
 
 MobilitySimulator::~MobilitySimulator(){
@@ -109,7 +109,7 @@ MobilitySimulator::simulate(){
         
         double averageResponseTime = totalResponseTime / responseTimeCollect.size();
         
-        //cout <<timeSlot<<" "<<averageResponseTime<<endl;
+        cout <<timeSlot<<" "<<averageResponseTime<<endl;
         _controller->addTimeSlotResponseTime(averageResponseTime);
         responseTimeCollect.clear();
 
