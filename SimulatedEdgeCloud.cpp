@@ -22,7 +22,7 @@ SimulatedEdgeCloud::SimulatedEdgeCloud(const int addr){
     
     //define cost
     _baseResponse = 120;
-    _singleHopCost = 14;
+    _singleHopCost = 5;
     _unitLoadCost = 100;
     
     //client
@@ -30,19 +30,15 @@ SimulatedEdgeCloud::SimulatedEdgeCloud(const int addr){
 }
 
 void
-SimulatedEdgeCloud::init(SimulatedCentralController* const control, bool const readLoad){
+SimulatedEdgeCloud::init(SimulatedCentralController* const control, bool const readLoad, double hopCost, double baseResp){
     if(!readLoad){
         generateBaseWorkload();
         writeBaseWorkload();
     }else{
         readBaseWorkload();
     }
-    appWorkload(0);
-    
-    //debug use
-    baseWorkload(0.2);
-    totalWorkload(baseWorkload());
-    
+    _baseResponse = baseResp;
+    _singleHopCost = hopCost;
     _controller = control;
     _totalEdgeCloudNumber = _controller->cloudList()->size();
 }

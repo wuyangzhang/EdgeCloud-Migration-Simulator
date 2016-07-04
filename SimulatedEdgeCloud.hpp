@@ -37,7 +37,7 @@ public:
     void reservedClientNumber(int);
     void addPotentialClientNumber();
     void substractPotentialClientNumber(int);
-    void init(SimulatedCentralController* const, bool const);
+    void init(SimulatedCentralController* const, bool const, double hopCost, double baseResp);
     int serviceCount = 0;
     /* event of server */
     void generateBaseWorkload();

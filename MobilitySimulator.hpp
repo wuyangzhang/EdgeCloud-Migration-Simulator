@@ -25,6 +25,9 @@ public:
     void simulate();
 
     //vector<double> mobilityPattern(double, double, double);
+    double _hopCost = 0;
+    double _baseResp = 120;
+
 private:
     int _totalClientNumber;
     int _totalClientPosition;
@@ -38,5 +41,6 @@ private:
         double stay;
         double right;
     } _pattern;
-};
+    
+   };
 #endif /* MobilitySimulator_hpp */

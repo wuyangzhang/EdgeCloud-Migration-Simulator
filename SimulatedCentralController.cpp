@@ -23,6 +23,8 @@ SimulatedCentralController::SimulatedCentralController(MarkovProcess* mdp){
     
     _reQos = new ReactiveQoS();
     _reQos->_thredshold_QoS = 160;
+    _reQos->_baseResponse = mdp->baseResponse;
+    _reQos->_singleHopCost = mdp->singleHopCost;
     _reQos->_totalEdgeCloudNumber = _mdp->totalNumberOfEdgeCloud;
     _reQos->_pattern.left = _mdp->probabilityLeft;
     _reQos->_pattern.stay = _mdp->probabilityStay;
@@ -117,10 +119,12 @@ SimulatedCentralController::checkOptimalConnectedServer(int clientAddr, int clou
     
     if(_reQos->exceedQoSThreshold(clientAddr, cloudAddr, _cloudList->at(cloudAddr)->totalClientNumber()+_cloudList->at(cloudAddr)->reservedClientNumber())){
         int targetCloud = _mdp->getAction(cloudAddr, clientAddr);
-        cloudList()->at(targetCloud)->addPotentialClientNumber();
+        cloudList()->at(targetCloud)->reservedClientNumber(cloudList()->at(targetCloud)->reservedClientNumber() + 1);
         cloudList()->at(targetCloud)->serviceCount++;
         return  targetCloud;// launch Markov Decision Model
     }else{
+        cloudList()->at(cloudAddr)->reservedClientNumber(cloudList()->at(cloudAddr)->reservedClientNumber() + 1);
+
         cloudList()->at(cloudAddr)->addPotentialClientNumber();
         cloudList()->at(cloudAddr)->serviceCount++;
         return cloudAddr; // not migrate!
@@ -134,6 +138,7 @@ SimulatedCentralController::checkLowestLoadServer(int clientID){
             return a->totalClientNumber() + a->reservedClientNumber() < b->totalClientNumber() + b->reservedClientNumber();
         }
     } customLess;
+    
     
     SimulatedEdgeCloud* cloud = *std::min_element(_cloudList->begin(), _cloudList->end(), customLess);
     cloudList()->at(cloud->myAddr())->reservedClientNumber(cloudList()->at(cloud->myAddr())->reservedClientNumber() + 1);
@@ -167,40 +172,29 @@ SimulatedCentralController::printConnectedClient(){
 void
 SimulatedCentralController::computeAverageResponseTime(){
     
-    for(auto i = 0; i < clientList()->at(1)->_computeTime.size(); ++i){
-        clientAverageResponseTime.push_back(0);
+    double total = 0;
+    for(auto i = 0; i < timeSlotResponseTime.size(); ++i){
+        total+=timeSlotResponseTime.at(i);
     }
     
-    for(auto i = 0; i < clientList()->size(); ++i){
-        for(auto j = 0; j < clientList()->at(i)->_computeTime.size(); ++j){
-            clientAverageResponseTime.at(j) += clientList()->at(i)->_computeTime.at(j);
-        }
-    }
-    for(auto i = 0; i < clientAverageResponseTime.size(); ++i){
-        clientAverageResponseTime.at(i) /= clientList()->size();
-    }
+    printf("Average Response time is %f\n", total/timeSlotResponseTime.size());
 }
 
 void
 SimulatedCentralController::computeAveragePredictTime(){
-    for(auto i = 0; i < clientList()->at(1)->_predictQoS.size(); ++i){
-        clientPredictResponseTime.push_back(0);
+    double total = 0;
+    for(auto i = 0; i < timeSlotResponseTime.size(); ++i){
+         total+=timeSlotResponseTime.at(i);
     }
     
-    for(auto i = 0; i < clientList()->size(); ++i){
-        for(auto j = 0; j < clientList()->at(i)->_predictQoS.size(); ++j){
-            clientPredictResponseTime.at(j) += clientList()->at(i)->_predictQoS.at(j);
-        }
-    }
-    for(auto i = 0; i < clientPredictResponseTime.size(); ++i){
-        clientPredictResponseTime.at(i) /= clientList()->size();
-    }
+    printf("\n");
 }
 
 void
 SimulatedCentralController::addTimeSlotResponseTime(double time){
     timeSlotResponseTime.push_back(time);
 }
+
 void
 SimulatedCentralController::printAverageResponseTime(){
     for(auto i = 0; i < clientAverageResponseTime.size(); ++i){
@@ -229,7 +223,8 @@ SimulatedCentralController::printTimeSlotResponseTime(){
 void
 SimulatedCentralController::printServiceCount(){
     for(auto i = 0; i < cloudList()->size(); ++i){
-        printf("CentralController cloud %d service time %d\n",i, cloudList()->at(i)->serviceCount++);
+        //printf("CentralController cloud %d service time, %d\n",i, cloudList()->at(i)->serviceCount++);
+        printf("CentralController cloud service time, %d.0000\n", cloudList()->at(i)->serviceCount++);
     }
     printf("\n");
 

@@ -25,7 +25,6 @@ MarkovProcess::MarkovProcess(int totalNumberOfEdgeCloud, int totalNumberOfClient
     
     stateOfCloudClient = new vector<MarkovState*>(); /*  axis (x,y) x->position of cloud, y->position of client; */
     
-
     for(int i = 0; i < this->totalNumberOfEdgeCloud; i++){
         for(int j = 0; j<this->totalNumberOfClientsPosition; j++){
             MarkovState* state = new MarkovState();
@@ -75,7 +74,7 @@ MarkovProcess::MarkovProcess(int totalNumberOfEdgeCloud, int totalNumberOfClient
      * initiate number of request per session, 2min 200 request
      */
     this->numberOfRequest_session = 5 * 60;
-    this->singleHopCost = 14;
+    this->singleHopCost = 5;
     this->unitWorkloadCost = 100;
     this->baseResponse = 120;
     this->migrateCost = 2000;

@@ -21,6 +21,9 @@ MobilitySimulator::MobilitySimulator(int totalCloud, int totalClientNumber, int 
     _pattern.left = 0.8, _pattern.stay = 0.1, _pattern.right = 0.1;
     _readModel = true;
     _queryModel = 0; //0-Markov query, 1-workload query, 2-neverMigrate, 3-closest // in controller, runMarkov() to change nerver migrate.
+    
+    _hopCost = 18;
+    _baseResp = 120;
 }
 
 MobilitySimulator::~MobilitySimulator(){
@@ -36,6 +39,8 @@ MobilitySimulator::simulate(){
     MarkovProcess* mdp = new MarkovProcess(_totalCloud,_totalClientPosition);
     mdp->setGamma(0.5);
     //mdp->setTransitionProbability(_pattern.left, _pattern.stay, _pattern.right);
+    mdp->singleHopCost = _hopCost;
+    mdp->baseResponse = _baseResp;
     
     _controller = new SimulatedCentralController(mdp);
 
@@ -46,7 +51,7 @@ MobilitySimulator::simulate(){
     }
     
     for(vector<SimulatedEdgeCloud*>::iterator it = _controller->cloudList()->begin(); it != _controller->cloudList()->end(); ++it){
-        (*it)->init(_controller,_readModel);
+        (*it)->init(_controller,_readModel, _hopCost, _baseResp);
     }
     
     //initialize clients
@@ -69,18 +74,20 @@ MobilitySimulator::simulate(){
     */
     
     
+    
     for ( int timeSlot = 0; timeSlot < 720; timeSlot++){
         //check the clients in the current timeSlot
         vector<int>* client_slot = _controller->checkClient_timeSlot(timeSlot);
         vector<double> responseTimeCollect;
         // client_slot->at(i) represent one client id
+        cout<<"timeSlot: "<<timeSlot<<endl;
         for( int i = 0; i< client_slot->size(); i++){
             SimulatedClient* client = _controller->clientList()->at(client_slot->at(i));
             //client update its current location
             client->updateCurrentLocation_TimeSlot(timeSlot);
             
             if(client->firstConnect()){
-                client->queryConnectServer(3); // first query always return the nearest server
+                client->queryConnectServer(1); // first query always return the nearest server
                 client->connectServer(client->migrateServer());
             }else{
                 client->disconnectServer(client->connectedServer());
@@ -90,7 +97,9 @@ MobilitySimulator::simulate(){
             double responseTime = client->computeResponseTime();
             responseTimeCollect.push_back(responseTime);
             
-            client->queryConnectServer(_queryModel);
+            int server = client->queryConnectServer(_queryModel);
+            cout << "server"<<server<<" client num: "<<_controller->cloudList()->at(server)->totalClientNumber()<<",";
+            cout <<_controller->cloudList()->at(server)->reservedClientNumber()<<"\n";
 
             if(_queryModel == 0){
                 _controller->cloudList()->at(client->connectedServer())->reportConnectedClient();
@@ -99,7 +108,7 @@ MobilitySimulator::simulate(){
                 _controller->runMarkovDecision();
             }
             
-            //cout<<"c"<<client_slot->at(i)<<" rsp:"<<responseTime<<" l"<<client->currentClientPosition()<<" svr:"<<client->connectedServer()<<" num:"<<_controller->cloudList()->at(client->connectedServer())->totalClientNumber()<<" m"<<client->migrateServer()<<endl;
+            cout<<"c"<<client_slot->at(i)<<" rsp:"<<responseTime<<" l"<<client->currentClientPosition()<<" svr:"<<client->connectedServer()<<" num:"<<_controller->cloudList()->at(client->connectedServer())->totalClientNumber()<<" m"<<client->migrateServer()<<endl;
         }
         
         double totalResponseTime = 0;
@@ -109,7 +118,7 @@ MobilitySimulator::simulate(){
         
         double averageResponseTime = totalResponseTime / responseTimeCollect.size();
         
-        cout <<timeSlot<<" "<<averageResponseTime<<endl;
+        cout <<timeSlot<<","<<averageResponseTime<<endl;
         _controller->addTimeSlotResponseTime(averageResponseTime);
         responseTimeCollect.clear();
 
@@ -117,7 +126,9 @@ MobilitySimulator::simulate(){
     
     _controller->printTimeSlotResponseTime();
     _controller->printServiceCount();
-    //_controller->computeAverageResponseTime();
+    
+    
+    _controller->computeAverageResponseTime();
     //_controller->printAverageResponseTime();
 
     /*
