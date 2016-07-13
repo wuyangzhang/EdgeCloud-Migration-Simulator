@@ -73,7 +73,6 @@ int ValueIteration::solve(){
                      */
                     
                 }
-                
                 /* looking for the max gain */
                 
                 if(nextUtil > maxCurrentUtil){

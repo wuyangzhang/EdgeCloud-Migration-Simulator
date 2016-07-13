@@ -61,6 +61,8 @@ public:
     
     std::vector<int>* _timeSlot;
     std::vector<double>* getMobilityPattern();
+    int _nextConnectedServerName = -1;
+
 private:
     int _myAddr;
     void setMyAddr(int);
@@ -84,7 +86,6 @@ private:
     double _currentComputeTime;
     std::vector<int> _connectServerList;
     int _currentConnectedServerName;
-    int _nextConnectedServerName = -1;
     int _totalServer;
     SimulatedCentralController* _controller;
     

@@ -20,9 +20,9 @@ MobilitySimulator::MobilitySimulator(int totalCloud, int totalClientNumber, int 
     _totalClientPosition = totalClientPosition;
     _pattern.left = 0.8, _pattern.stay = 0.1, _pattern.right = 0.1;
     _readModel = true;
-    _queryModel = 0; //0-Markov query, 1-workload query, 2-neverMigrate, 3-closest // in controller, runMarkov() to change nerver migrate.
+    _queryModel = 1; //0-Markov query, 1-workload query, 2-neverMigrate, 3-closest // in controller, runMarkov() to change nerver migrate.
     
-    _hopCost = 18;
+    _hopCost = 22;
     _baseResp = 120;
 }
 
@@ -37,7 +37,7 @@ void
 MobilitySimulator::simulate(){
     //initialize mdp
     MarkovProcess* mdp = new MarkovProcess(_totalCloud,_totalClientPosition);
-    mdp->setGamma(0.5);
+    mdp->setGamma(0);
     //mdp->setTransitionProbability(_pattern.left, _pattern.stay, _pattern.right);
     mdp->singleHopCost = _hopCost;
     mdp->baseResponse = _baseResp;
@@ -73,8 +73,6 @@ MobilitySimulator::simulate(){
         start simulate mobility based on timeSlot
     */
     
-    
-    
     for ( int timeSlot = 0; timeSlot < 720; timeSlot++){
         //check the clients in the current timeSlot
         vector<int>* client_slot = _controller->checkClient_timeSlot(timeSlot);
@@ -86,21 +84,26 @@ MobilitySimulator::simulate(){
             //client update its current location
             client->updateCurrentLocation_TimeSlot(timeSlot);
             
-            if(client->firstConnect()){
-                client->queryConnectServer(1); // first query always return the nearest server
+            double responseTime = 0.0;
+            bool firstConnect = client->firstConnect();
+            int previousServer = 0;
+            if(firstConnect){
+                previousServer = 0;
+                client->queryConnectServer(3); // first query always return the nearest server
                 client->connectServer(client->migrateServer());
             }else{
-                client->disconnectServer(client->connectedServer());
+                previousServer = client->connectedServer();
+                //client->disconnectServer(client->connectedServer());
                 client->connectServer(client->migrateServer());
+                responseTime = client->computeResponseTime();
+                responseTimeCollect.push_back(responseTime);
+                
             }
             
-            double responseTime = client->computeResponseTime();
-            responseTimeCollect.push_back(responseTime);
+        
             
-            int server = client->queryConnectServer(_queryModel);
-            cout << "server"<<server<<" client num: "<<_controller->cloudList()->at(server)->totalClientNumber()<<",";
-            cout <<_controller->cloudList()->at(server)->reservedClientNumber()<<"\n";
-
+            client->queryConnectServer(_queryModel);
+            
             if(_queryModel == 0){
                 _controller->cloudList()->at(client->connectedServer())->reportConnectedClient();
                 _controller->cloudList()->at(client->migrateServer())->reportConnectedClient();
@@ -108,7 +111,18 @@ MobilitySimulator::simulate(){
                 _controller->runMarkovDecision();
             }
             
-            cout<<"c"<<client_slot->at(i)<<" rsp:"<<responseTime<<" l"<<client->currentClientPosition()<<" svr:"<<client->connectedServer()<<" num:"<<_controller->cloudList()->at(client->connectedServer())->totalClientNumber()<<" m"<<client->migrateServer()<<endl;
+            
+            cout<<"c"<<client_slot->at(i)<<" rsp:"<<responseTime<<" l"<<client->currentClientPosition()<<" svr:"<<client->connectedServer()<<" num:"<<_controller->cloudList()->at(client->connectedServer())->totalClientNumber()<<" m"<<client->_nextConnectedServerName<<endl;
+            
+            
+           
+        }
+        
+        for( int i = 0; i< client_slot->size(); i++){
+            SimulatedClient* client = _controller->clientList()->at(client_slot->at(i));
+            client->disconnectServer(client->connectedServer());
+            _controller->cloudList()->at(client->connectedServer())->reportConnectedClient();
+
         }
         
         double totalResponseTime = 0;

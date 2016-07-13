@@ -156,20 +156,6 @@ MarkovProcess::calculateTotalCost_circle(MarkovState* const previousState, Marko
     int transitClientDistance = std::abs(transitClient - transitEdgeCloud);
     transitClientDistance = min(transitClientDistance, std::abs(totalNumberOfEdgeCloud - transitClientDistance));
     
-    if(this->model == 2){
-        if (previousClientDistance < this->totalNumberOfEdgeCloud - previousClientDistance) {
-            previousResponse = baseResponse + singleHopCost * previousClientDistance;
-        }else{
-            previousResponse = baseResponse + singleHopCost * (totalNumberOfEdgeCloud - previousClientDistance);
-        }
-        
-        int transitClientDistance = std::abs(transitClient - transitEdgeCloud);
-        if (transitClientDistance < this->totalNumberOfEdgeCloud - transitClientDistance) {
-            transitResponse = baseResponse + singleHopCost * transitClientDistance;
-        }else{
-            transitResponse = baseResponse + singleHopCost * (totalNumberOfEdgeCloud - transitClientDistance);
-        }
-    }
     
     
     if(this->model == 3){

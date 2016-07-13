@@ -22,7 +22,7 @@ SimulatedEdgeCloud::SimulatedEdgeCloud(const int addr){
     
     //define cost
     _baseResponse = 120;
-    _singleHopCost = 5;
+    _singleHopCost = 24;
     _unitLoadCost = 100;
     
     //client
@@ -195,7 +195,7 @@ SimulatedEdgeCloud::reportWorkload(){
 
 void
 SimulatedEdgeCloud::reportConnectedClient(){
-    _controller->updateConnectedClient(_myAddr, totalClientNumber() + reservedClientNumber());
+    _controller->updateConnectedClient(_myAddr, reservedClientNumber());
 }
 
 double

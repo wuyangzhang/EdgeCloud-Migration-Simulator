@@ -173,7 +173,7 @@ void
 SimulatedCentralController::computeAverageResponseTime(){
     
     double total = 0;
-    for(auto i = 0; i < timeSlotResponseTime.size(); ++i){
+    for(auto i = 1; i < timeSlotResponseTime.size(); ++i){
         total+=timeSlotResponseTime.at(i);
     }
     
