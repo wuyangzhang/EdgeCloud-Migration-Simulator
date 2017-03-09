@@ -73,7 +73,8 @@ public:
      */
     double calculateTotalCost(MarkovState* state, MarkovAction * const action); /* not requsite to record all cost based on pair of <state, action>*/
     double calculateTotalCost_circle(MarkovState* const previousState, MarkovState* const transitState);
-    
+    double calculateTotalCost_test(MarkovState* const previousState, MarkovState* const transitState);
+
     void setCost(int indexOfEdgeCloud, int indexOfClient, double costOfTotal);
     void setCost(int indexOfEdgeCloud, int indexOfClient, double costOfMigration, double costOfTransmission);
     void setCost(MarkovState * state, MarkovAction * const action, double costOfTotal);

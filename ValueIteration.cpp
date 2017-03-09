@@ -21,6 +21,8 @@ int ValueIteration::solve(){
     
     double gamma = mdp->getGamma();
     
+    gamma = 0.5;
+    
     double threshold;
     
     if(gamma == 1){
@@ -62,7 +64,8 @@ int ValueIteration::solve(){
                 for(int i = 0; i < size; i++){
                     
                     MarkovState* resultState = resultingStates->at(i);
-                    double cost = mdp->calculateTotalCost_circle(state, resultState);
+                    //double cost = mdp->calculateTotalCost_circle(state, resultState);
+                    double cost = mdp->calculateTotalCost_test(state,resultState);
                     double probility = mdp->getTransitionProbability_circle(state,action,resultState);
                     nextUtil += probility * ( cost + gamma * mdp->getUtility(resultState));
                     

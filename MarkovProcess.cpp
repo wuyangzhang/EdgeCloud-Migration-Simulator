@@ -79,6 +79,7 @@ MarkovProcess::MarkovProcess(int totalNumberOfEdgeCloud, int totalNumberOfClient
     this->baseResponse = 120;
     this->migrateCost = 2000;
     
+    
 }
 
 MarkovProcess::~MarkovProcess(){
@@ -129,6 +130,55 @@ MarkovProcess::calculateWorkloadCost(int totalClientNumber){
         workloadCost = totalClientNumber * 100;
     }
     return workloadCost;
+}
+
+
+double
+MarkovProcess::calculateTotalCost_test(MarkovState* const previousState, MarkovState* const transitState){
+    
+    //previous location of edge cloud & client
+    int previousEdgeCloud = previousState->positionOfEdgeCloud;
+    //int previousClient = previousState->positionOfMobileUser;
+    double previousResponse = 0;
+    
+    //transit location of edge cloud & client
+    int transitEdgeCloud = transitState->positionOfEdgeCloud;
+    int transitClient = transitState->positionOfMobileUser;
+    double transitResponse = 0;
+    
+    //responseGain, migrationCost, responseGain - migrationCost
+    double responseGain = 0;
+    double totalGain = 0;
+    
+    
+    int previousClientDistance = std::abs(transitClient - previousEdgeCloud);
+    previousClientDistance = min(previousClientDistance, std::abs(totalNumberOfEdgeCloud - previousClientDistance));
+    
+    int transitClientDistance = std::abs(transitClient - transitEdgeCloud);
+    transitClientDistance = min(transitClientDistance, std::abs(totalNumberOfEdgeCloud - transitClientDistance));
+    
+    
+    
+    if(this->model == 3){
+        if (previousClientDistance < this->totalNumberOfEdgeCloud - previousClientDistance) {
+                previousResponse =  previousClientDistance;
+            }else{
+                previousResponse =  (totalNumberOfEdgeCloud - previousClientDistance);
+        }
+        
+        if (transitClientDistance < this->totalNumberOfEdgeCloud - transitClientDistance) {
+            transitResponse = transitClientDistance;
+        }else{
+            transitResponse = (totalNumberOfEdgeCloud - transitClientDistance);
+            
+        }
+    }
+    
+    responseGain = (previousResponse - transitResponse);
+    
+    //printf("user %d, prevS %d, nextS %d, resp gain %f\n",transitClient,previousEdgeCloud, transitEdgeCloud, responseGain);
+    return responseGain;
+    
 }
 
 double

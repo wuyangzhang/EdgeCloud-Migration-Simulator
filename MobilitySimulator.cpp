@@ -18,9 +18,9 @@ MobilitySimulator::MobilitySimulator(int totalCloud, int totalClientNumber, int 
     _totalCloud = totalCloud;
     _totalClientNumber = totalClientNumber;
     _totalClientPosition = totalClientPosition;
-    _pattern.left = 0.8, _pattern.stay = 0.1, _pattern.right = 0.1;
-    _readModel = true;
-    _queryModel = 1; //0-Markov query, 1-workload query, 2-neverMigrate, 3-closest // in controller, runMarkov() to change nerver migrate.
+    _pattern.left = 0, _pattern.stay = 0, _pattern.right = 1;
+    _readModel = false;
+    _queryModel = 0; //0-Markov query, 1-workload query, 2-neverMigrate, 3-closest // in controller, runMarkov() to change nerver migrate.
     
     _hopCost = 22;
     _baseResp = 120;
@@ -38,7 +38,7 @@ MobilitySimulator::simulate(){
     //initialize mdp
     MarkovProcess* mdp = new MarkovProcess(_totalCloud,_totalClientPosition);
     mdp->setGamma(0);
-    //mdp->setTransitionProbability(_pattern.left, _pattern.stay, _pattern.right);
+    mdp->setTransitionProbability(_pattern.left, _pattern.stay, _pattern.right);
     mdp->singleHopCost = _hopCost;
     mdp->baseResponse = _baseResp;
     
@@ -58,7 +58,7 @@ MobilitySimulator::simulate(){
     for(int i = 0; i < _totalClientNumber; i++){
         SimulatedClient* client;
         if(!_readModel){
-            client= new SimulatedClient(i, _totalClientPosition, _totalCloud, 50, _pattern.left, _pattern.stay, _pattern.right); // pathlength, mobilityPattern
+            client= new SimulatedClient(i, _totalClientPosition, _totalCloud, 1, _pattern.left, _pattern.stay, _pattern.right); // pathlength, mobilityPattern
         }
         else{
             // readModel uses real trace, read mobility pattern, read
@@ -73,7 +73,8 @@ MobilitySimulator::simulate(){
         start simulate mobility based on timeSlot
     */
     
-    for ( int timeSlot = 0; timeSlot < 720; timeSlot++){
+    for ( int timeSlot = 0; timeSlot < 1; timeSlot++){
+        /*
         //check the clients in the current timeSlot
         vector<int>* client_slot = _controller->checkClient_timeSlot(timeSlot);
         vector<double> responseTimeCollect;
@@ -99,8 +100,6 @@ MobilitySimulator::simulate(){
                 responseTimeCollect.push_back(responseTime);
                 
             }
-            
-        
             
             client->queryConnectServer(_queryModel);
             
@@ -144,8 +143,9 @@ MobilitySimulator::simulate(){
     
     _controller->computeAverageResponseTime();
     //_controller->printAverageResponseTime();
-
-    /*
+         
+    */
+        int round = 0;
     for(auto i = 0; i < _controller->clientList()->size(); i++){
         int serverConnect = 0;
         SimulatedClient* client = _controller->clientList()->at(i);
@@ -165,21 +165,26 @@ MobilitySimulator::simulate(){
             _controller->runMarkovDecision();
         }
 
+        _controller->getMDP()->printOptimizedActions();
+
         client->computeResponseTime();
         client->moveToNextClientPosition();
     }
     //_controller->printConnectedClient();
-
-    //int round = 1;
+         
+   
+            
     while( !_controller->clientList()->back()->terminateMove()){
+        round++;
         //printf("step %d \n", round++);
         for(auto i = 0; i < _controller->clientList()->size(); i++){
             SimulatedClient* client = _controller->clientList()->at(i);
             int server = 0;
+        
             client->disconnectServer(client->connectedServer());
             client->connectServer(client->migrateServer());
             server = client->queryConnectServer(_queryModel);
-           
+            
             if(_queryModel == 0){
                 _controller->cloudList()->at(client->connectedServer())->reportConnectedClient();
                 _controller->cloudList()->at(client->migrateServer())->reportConnectedClient();
@@ -188,10 +193,10 @@ MobilitySimulator::simulate(){
             
             client->computeResponseTime();
             client->moveToNextClientPosition();
-        }
+                   }
 
     }
-    */
+    
     
     
     //_controller->computeAveragePredictTime();
@@ -199,6 +204,6 @@ MobilitySimulator::simulate(){
     
     //SimulatedClient* client = _controller->clientList()->at(20);
     //client->printComputeTime();
+    }
 }
-
 

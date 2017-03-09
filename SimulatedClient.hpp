@@ -62,6 +62,7 @@ public:
     std::vector<int>* _timeSlot;
     std::vector<double>* getMobilityPattern();
     int _nextConnectedServerName = -1;
+    std::vector<int>* _mobilityPath;
 
 private:
     int _myAddr;
@@ -79,7 +80,6 @@ private:
     void setTotalClientPosition(const int);
     int _currentMoveStep = 0 ;
     bool _terminateMove = false;
-    std::vector<int>* _mobilityPath;
     double _pLeft, _pStay, _pRight; //mobility Pattern
     
     std::vector<SimulatedEdgeCloud*>* _cloudList;

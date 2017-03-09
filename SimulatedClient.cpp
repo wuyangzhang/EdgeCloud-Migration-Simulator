@@ -16,13 +16,19 @@ SimulatedClient::SimulatedClient(int addr, int totalClientPosition, int totalSer
     setTotalClientPosition(totalClientPosition);
     setMobilityPathLength(pathLength);
     generateStartPosition();
-    setCurrentClientPosition(_startClientPosition);
+    
+    //setCurrentClientPosition(_startClientPosition);
+    _startClientPosition = 0;
+    _currentClientPosition = 0;
+    
     setMobilityPattern(pleft, pstay, pright);
     _mobilityPath = new vector<int>();
     generateRandomMove_circle();
     writeMove();
     _totalServer = totalServer;
     //generateRandomServer();
+    printMobilityPath();
+    
 }
 
 SimulatedClient::SimulatedClient(int addr, int totalClientPosition, int totalServer){
